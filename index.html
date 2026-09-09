@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUELLITAS QR</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .contenedor {
+      max-width: 500px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitulo {
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    #foto {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: none;
+      margin: 20px auto;
+    }
+
+    .dato {
+      text-align: left;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .dato strong {
+      display: inline-block;
+      width: 100px;
+    }
+
+    .boton {
+      display: block;
+      margin: 15px auto;
+      padding: 13px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: white;
+      background: #333;
+      max-width: 280px;
+    }
+
+    .oculto {
+      display: none;
+    }
+
+    .error {
+      color: #c00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+  <h1>🐾 HUELLITAS QR</h1>
+  <div class="subtitulo">Ficha de identificación</div>
+
+  <div id="cargando">Cargando información...</div>
+
+  <div id="perfil" class="oculto">
+
+    <img id="foto" alt="Foto de la mascota">
+
+    <h2 id="nombre"></h2>
+
+    <div class="dato">
+      <strong>Especie:</strong>
+      <span id="especie"></span>
+    </div>
+
+    <div class="dato">
+      <strong>Color:</strong>
+      <span id="color"></span>
+    </div>
+
+    <div class="dato">
+      <strong>Código:</strong>
+      <span id="codigo"></span>
+    </div>
+
+    <div class="dato">
+      <strong>Estado:</strong>
+      <span id="estado"></span>
+    </div>
+
+    <a id="audio" class="boton oculto" target="_blank">
+      🔊 Escuchar sonido
+    </a>
+
+    <a id="telefono" class="boton oculto">
+      📞 Llamar
+    </a>
+
+    <a id="whatsapp" class="boton oculto" target="_blank">
+      💬 WhatsApp
+    </a>
+
+  </div>
+
+  <div id="error" class="error oculto">
+    No encontramos información para esta mascota.
+  </div>
+
+</div>
+
+<script>
+
+const API = "https://pastesheet.com/api/w4ajnkyn";
+
+const parametros = new URLSearchParams(window.location.search);
+const id = parametros.get("id");
+
+const cargando = document.getElementById("cargando");
+const perfil = document.getElementById("perfil");
+const error = document.getElementById("error");
+
+async function cargarMascota() {
+
+  if (!id) {
+    cargando.style.display = "none";
+    error.textContent = "No se encontró el código de la mascota.";
+    error.classList.remove("oculto");
+    return;
+  }
+
+  try {
+
+    const respuesta = await fetch(API);
+    const resultado = await respuesta.json();
+
+    const mascota = resultado.data.find(
+      animal => animal.ID === id
+    );
+
+    if (!mascota) {
+      cargando.style.display = "none";
+      error.classList.remove("oculto");
+      return;
+    }
+
+    document.getElementById("nombre").textContent = mascota.Name || "";
+    document.getElementById("especie").textContent = mascota.Species || "";
+    document.getElementById("color").textContent = mascota.Color || "";
+    document.getElementById("codigo").textContent = mascota.ID || "";
+    document.getElementById("estado").textContent = mascota.Status || "ACTIVO";
+
+    if (mascota.Photo) {
+      const foto = document.getElementById("foto");
+      foto.src = mascota.Photo;
+      foto.style.display = "block";
+    }
+
+    if (mascota.Audio) {
+      const audio = document.getElementById("audio");
+      audio.href = mascota.Audio;
+      audio.classList.remove("oculto");
+    }
+
+    if (mascota.Phone) {
+      const telefono = document.getElementById("telefono");
+      telefono.href = "tel:" + mascota.Phone;
+      telefono.classList.remove("oculto");
+    }
+
+    if (mascota.WhatsApp) {
+      const whatsapp = document.getElementById("whatsapp");
+      whatsapp.href = mascota.WhatsApp;
+      whatsapp.classList.remove("oculto");
+    }
+
+    cargando.style.display = "none";
+    perfil.classList.remove("oculto");
+
+  } catch (e) {
+
+    cargando.style.display = "none";
+    error.textContent = "No se pudo cargar la información.";
+    error.classList.remove("oculto");
+
+    console.error(e);
+  }
+}
+
+cargarMascota();
+
+</script>
+
+</body>
+</html>
