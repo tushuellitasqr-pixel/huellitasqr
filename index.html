@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>HUELLITAS QR</title>
@@ -96,6 +99,7 @@
 
 </head>
 
+
 <body>
 
   <div class="contenedor">
@@ -106,6 +110,7 @@
       Ficha de identificación
     </div>
 
+
     <div id="cargando">
       Cargando información...
     </div>
@@ -113,7 +118,10 @@
 
     <div id="perfil" class="oculto">
 
-      <img id="foto" alt="Foto de la mascota">
+      <img
+        id="foto"
+        alt="Foto de la mascota"
+      >
 
 
       <h2 id="nombre"></h2>
@@ -150,7 +158,9 @@
         class="boton oculto"
         target="_blank"
         rel="noopener noreferrer">
+
         🔊 Escuchar sonido
+
       </a>
 
 
@@ -159,7 +169,9 @@
       <a
         id="telefono"
         class="boton oculto">
+
         📞 Llamar
+
       </a>
 
 
@@ -170,357 +182,446 @@
         class="boton oculto"
         target="_blank"
         rel="noopener noreferrer">
-        💬 WhatsApp
-      </a>
 
+        💬 WhatsApp
+
+      </a>
 
     </div>
 
 
-    <div id="error" class="error oculto">
+    <div
+      id="error"
+      class="error oculto">
+
       No encontramos información para esta mascota.
+
     </div>
 
 
     <div class="pie">
+
       HUELLITAS QR
+
     </div>
 
   </div>
 
 
-  <script>
-
-    /*
-      =====================================================
-      CONFIGURACIÓN
-      =====================================================
-    */
-
-    const API = "https://pastesheet.com/api/w4ajnkyn";
+<script>
 
 
-    /*
-      =====================================================
-      OBTENER EL ID DESDE LA URL
-      =====================================================
+/* =====================================================
+   CONFIGURACIÓN
+===================================================== */
 
-      Ejemplo:
+const API =
+  "https://pastesheet.com/api/w4ajnkyn";
 
-      https://tushuellitasqr-pixel.github.io/huellitasqr/?id=HUELL0001
 
-    */
+/* =====================================================
+   OBTENER ID DE LA URL
+===================================================== */
 
-    const parametros = new URLSearchParams(
-      window.location.search
+const parametros =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const id =
+  parametros.get("id");
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const cargando =
+  document.getElementById("cargando");
+
+const perfil =
+  document.getElementById("perfil");
+
+const error =
+  document.getElementById("error");
+
+
+/* =====================================================
+   CONVERTIR ENLACE DE GOOGLE DRIVE
+===================================================== */
+
+function convertirGoogleDrive(enlace) {
+
+  if (!enlace) {
+    return "";
+  }
+
+
+  /*
+    FORMATO 1
+
+    https://drive.google.com/file/d/ID/view
+  */
+
+  let coincidencia =
+    enlace.match(
+      /\/d\/([^/]+)/
     );
 
-    const id = parametros.get("id");
+
+  /*
+    FORMATO 2
+
+    https://drive.google.com/uc?export=view&id=ID
+
+    FORMATO 3
+
+    https://drive.google.com/thumbnail?id=ID
+  */
+
+  if (!coincidencia) {
+
+    coincidencia =
+      enlace.match(
+        /[?&]id=([^&]+)/
+      );
+
+  }
+
+
+  /*
+    Si encontramos el ID
+  */
+
+  if (coincidencia) {
+
+    const archivoID =
+      coincidencia[1];
 
 
     /*
-      =====================================================
-      ELEMENTOS DE LA PÁGINA
-      =====================================================
+      Utilizamos thumbnail de Google Drive
     */
 
-    const cargando =
-      document.getElementById("cargando");
+    return (
+      "https://drive.google.com/thumbnail?id="
+      + archivoID
+      + "&sz=w1000"
+    );
 
-    const perfil =
-      document.getElementById("perfil");
+  }
 
-    const error =
-      document.getElementById("error");
+
+  /*
+    Si no es Google Drive,
+    usamos el enlace original
+  */
+
+  return enlace;
+
+}
+
+
+/* =====================================================
+   CARGAR MASCOTA
+===================================================== */
+
+async function cargarMascota() {
+
+
+  /*
+    Si no existe ID
+  */
+
+  if (!id) {
+
+    cargando.style.display =
+      "none";
+
+    error.textContent =
+      "No se encontró el código de la mascota.";
+
+    error.classList.remove(
+      "oculto"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+
+    /* ================================================
+       CONSULTAR PASTESHEET
+    ================================================ */
+
+    const respuesta =
+      await fetch(API);
 
 
     /*
-      =====================================================
-      CONVERTIR ENLACE DE GOOGLE DRIVE
-      =====================================================
+      Convertir respuesta a JSON
     */
 
-    function convertirGoogleDrive(enlace) {
+    const resultado =
+      await respuesta.json();
 
-      if (!enlace) {
-        return "";
-      }
 
-      /*
-        Busca el ID del archivo.
+    /*
+      Buscar mascota
+    */
 
-        Ejemplo:
+    const mascota =
+      resultado.data.find(
 
-        https://drive.google.com/file/d/ABC123/view
+        animal =>
 
-        obtiene:
+          String(animal.ID)
+            .trim()
+            .toUpperCase()
 
-        ABC123
-      */
+          ===
 
-      const coincidencia =
-        enlace.match(/\/d\/([^/]+)/);
+          id
+            .trim()
+            .toUpperCase()
 
-      if (coincidencia) {
+      );
 
-        return "https://drive.google.com/uc?export=view&id="
-          + coincidencia[1];
 
-      }
+    /*
+      Si no existe
+    */
 
-      return enlace;
+    if (!mascota) {
+
+      cargando.style.display =
+        "none";
+
+      error.textContent =
+        "No encontramos información para esta mascota.";
+
+      error.classList.remove(
+        "oculto"
+      );
+
+      return;
+
     }
 
 
-    /*
-      =====================================================
-      CARGAR MASCOTA
-      =====================================================
-    */
+    /* ================================================
+       DATOS
+    ================================================ */
 
-    async function cargarMascota() {
+    document.getElementById(
+      "nombre"
+    ).textContent =
+      mascota.Name || "";
+
+
+    document.getElementById(
+      "especie"
+    ).textContent =
+      mascota.Species || "";
+
+
+    document.getElementById(
+      "color"
+    ).textContent =
+      mascota.Color || "";
+
+
+    document.getElementById(
+      "codigo"
+    ).textContent =
+      mascota.ID || "";
+
+
+    document.getElementById(
+      "estado"
+    ).textContent =
+      mascota.Status || "ACTIVO";
+
+
+    /* ================================================
+       FOTO
+    ================================================ */
+
+    if (mascota.Photo) {
+
+
+      const foto =
+        document.getElementById(
+          "foto"
+        );
+
+
+      const enlaceFoto =
+        convertirGoogleDrive(
+          mascota.Photo
+        );
+
 
       /*
-        Si no existe ID
+        Colocar imagen
       */
 
-      if (!id) {
-
-        cargando.style.display = "none";
-
-        error.textContent =
-          "No se encontró el código de la mascota.";
-
-        error.classList.remove("oculto");
-
-        return;
-      }
+      foto.src =
+        enlaceFoto;
 
 
-      try {
+      /*
+        Si carga correctamente
+      */
 
-        /*
-          Consultar PasteSheet
-        */
+      foto.onload =
+        function() {
 
-        const respuesta =
-          await fetch(API);
+          foto.style.display =
+            "block";
 
-
-        /*
-          Convertir respuesta a JSON
-        */
-
-        const resultado =
-          await respuesta.json();
+        };
 
 
-        /*
-          Buscar la mascota por ID
-        */
+      /*
+        Si falla
+      */
 
-        const mascota =
-          resultado.data.find(
-            animal => String(animal.ID).trim() === id.trim()
+      foto.onerror =
+        function() {
+
+          console.log(
+            "No se pudo cargar la fotografía."
           );
 
+          foto.style.display =
+            "none";
 
-        /*
-          Si no existe la mascota
-        */
-
-        if (!mascota) {
-
-          cargando.style.display = "none";
-
-          error.textContent =
-            "No encontramos información para esta mascota.";
-
-          error.classList.remove("oculto");
-
-          return;
-        }
-
-
-        /*
-          =================================================
-          DATOS DE LA MASCOTA
-          =================================================
-        */
-
-        document.getElementById("nombre").textContent =
-          mascota.Name || "";
-
-        document.getElementById("especie").textContent =
-          mascota.Species || "";
-
-        document.getElementById("color").textContent =
-          mascota.Color || "";
-
-        document.getElementById("codigo").textContent =
-          mascota.ID || "";
-
-        document.getElementById("estado").textContent =
-          mascota.Status || "ACTIVO";
-
-
-        /*
-          =================================================
-          FOTO
-          =================================================
-        */
-
-        if (mascota.Photo) {
-
-          const foto =
-            document.getElementById("foto");
-
-
-          /*
-            Convertir automáticamente
-            el enlace de Google Drive
-          */
-
-          const enlaceFoto =
-            convertirGoogleDrive(mascota.Photo);
-
-
-          foto.src = enlaceFoto;
-
-
-          foto.onload = function() {
-
-            foto.style.display = "block";
-
-          };
-
-
-          /*
-            Si la imagen no puede cargarse,
-            simplemente no mostramos la imagen.
-          */
-
-          foto.onerror = function() {
-
-            foto.style.display = "none";
-
-          };
-
-        }
-
-
-        /*
-          =================================================
-          AUDIO
-          =================================================
-        */
-
-        if (mascota.Audio) {
-
-          const audio =
-            document.getElementById("audio");
-
-
-          /*
-            El audio se abre en otra pestaña.
-
-            Si está en Google Drive,
-            conservamos el enlace original.
-          */
-
-          audio.href =
-            mascota.Audio;
-
-          audio.classList.remove("oculto");
-
-        }
-
-
-        /*
-          =================================================
-          TELÉFONO
-          =================================================
-        */
-
-        if (mascota.Phone) {
-
-          const telefono =
-            document.getElementById("telefono");
-
-
-          telefono.href =
-            "tel:" + mascota.Phone;
-
-
-          telefono.classList.remove("oculto");
-
-        }
-
-
-        /*
-          =================================================
-          WHATSAPP
-          =================================================
-        */
-
-        if (mascota.WhatsApp) {
-
-          const whatsapp =
-            document.getElementById("whatsapp");
-
-
-          whatsapp.href =
-            mascota.WhatsApp;
-
-
-          whatsapp.classList.remove("oculto");
-
-        }
-
-
-        /*
-          =================================================
-          MOSTRAR PERFIL
-          =================================================
-        */
-
-        cargando.style.display = "none";
-
-        perfil.classList.remove("oculto");
-
-
-      } catch (e) {
-
-        /*
-          =================================================
-          ERROR
-          =================================================
-        */
-
-        console.error(e);
-
-
-        cargando.style.display = "none";
-
-        error.textContent =
-          "No se pudo cargar la información.";
-
-        error.classList.remove("oculto");
-
-      }
+        };
 
     }
 
 
-    /*
-      =====================================================
-      INICIAR
-      =====================================================
-    */
+    /* ================================================
+       AUDIO
+    ================================================ */
 
-    cargarMascota();
+    if (mascota.Audio) {
 
-  </script>
+      const audio =
+        document.getElementById(
+          "audio"
+        );
+
+
+      audio.href =
+        mascota.Audio;
+
+
+      audio.classList.remove(
+        "oculto"
+      );
+
+    }
+
+
+    /* ================================================
+       TELÉFONO
+    ================================================ */
+
+    if (mascota.Phone) {
+
+      const telefono =
+        document.getElementById(
+          "telefono"
+        );
+
+
+      telefono.href =
+        "tel:" + mascota.Phone;
+
+
+      telefono.classList.remove(
+        "oculto"
+      );
+
+    }
+
+
+    /* ================================================
+       WHATSAPP
+    ================================================ */
+
+    if (mascota.WhatsApp) {
+
+      const whatsapp =
+        document.getElementById(
+          "whatsapp"
+        );
+
+
+      whatsapp.href =
+        mascota.WhatsApp;
+
+
+      whatsapp.classList.remove(
+        "oculto"
+      );
+
+    }
+
+
+    /* ================================================
+       MOSTRAR PERFIL
+    ================================================ */
+
+    cargando.style.display =
+      "none";
+
+
+    perfil.classList.remove(
+      "oculto"
+    );
+
+
+  }
+
+
+  catch (e) {
+
+
+    console.error(e);
+
+
+    cargando.style.display =
+      "none";
+
+
+    error.textContent =
+      "No se pudo cargar la información.";
+
+
+    error.classList.remove(
+      "oculto"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+cargarMascota();
+
+
+</script>
+
 
 </body>
 
