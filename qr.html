@@ -47,14 +47,13 @@
       color: white;
     }
 
-    button:hover {
-      opacity: 0.85;
-    }
-
     #qr {
       margin: 30px auto 20px;
-      width: 256px;
-      min-height: 20px;
+      width: 236px;
+    }
+
+    #descargar {
+      display: none;
     }
 
     #enlace {
@@ -62,10 +61,6 @@
       max-width: 500px;
       margin: 20px auto;
       font-size: 14px;
-    }
-
-    #descargar {
-      display: none;
     }
   </style>
 </head>
@@ -98,6 +93,8 @@
 
   <script>
 
+    const TAMANO_QR = 236;
+
     function generarQR() {
 
       const id =
@@ -124,8 +121,8 @@
         contenedor,
         {
           text: enlace,
-          width: 256,
-          height: 256,
+          width: TAMANO_QR,
+          height: TAMANO_QR,
           correctLevel: QRCode.CorrectLevel.H
         }
       );
@@ -133,8 +130,7 @@
       document.getElementById("enlace").innerHTML =
         "<strong>ID:</strong> " + id +
         "<br><br>" +
-        "<strong>Enlace:</strong><br>" +
-        enlace;
+        "<strong>Enlace:</strong><br>" + enlace;
 
       document.getElementById("descargar").style.display =
         "inline-block";
@@ -161,7 +157,7 @@
         document.createElement("a");
 
       enlace.download =
-        id + ".png";
+        id + "_QR_20mm.png";
 
       enlace.href =
         canvas.toDataURL("image/png");
