@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Registro | HUELLITAS QR</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+      color: #333;
+    }
+
+    .contenedor {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 13px;
+      background: #222;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 25px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+  <h1>🐾 HUELLITAS QR</h1>
+
+  <h2>Registrar mascota</h2>
+
+  <label>Nombre</label>
+  <input type="text" id="nombre" placeholder="Ejemplo: MAX">
+
+  <label>Especie</label>
+  <select id="especie">
+    <option value="">Seleccionar</option>
+    <option value="PERRO">PERRO</option>
+    <option value="GATO">GATO</option>
+    <option value="OTRO">OTRO</option>
+  </select>
+
+  <label>Color</label>
+  <input type="text" id="color" placeholder="Ejemplo: NEGRO">
+
+  <button onclick="generarID()">
+    Generar ID
+  </button>
+
+  <div id="resultado"></div>
+
+</div>
+
+<script>
+
+  const API =
+    "https://pastesheet.com/api/w4ajnkyn";
+
+  async function generarID() {
+
+    const nombre =
+      document.getElementById("nombre")
+      .value
+      .trim()
+      .toUpperCase();
+
+    const especie =
+      document.getElementById("especie")
+      .value;
+
+    const color =
+      document.getElementById("color")
+      .value
+      .trim()
+      .toUpperCase();
+
+    if (!nombre || !especie || !color) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    try {
+
+      const respuesta =
+        await fetch(API);
+
+      const datos =
+        await respuesta.json();
+
+      const mascotas =
+        datos.data || [];
+
+      let mayor = 0;
+
+      mascotas.forEach(mascota => {
+
+        const id =
+          String(mascota.ID || "");
+
+        const numero =
+          parseInt(
+            id.replace("HUELL", "")
+          );
+
+        if (!isNaN(numero) && numero > mayor) {
+          mayor = numero;
+        }
+
+      });
+
+      const nuevoNumero =
+        mayor + 1;
+
+      const nuevoID =
+        "HUELL" +
+        String(nuevoNumero)
+          .padStart(4, "0");
+
+      const enlace =
+        "https://tushuellitasqr-pixel.github.io/huellitasqr/?id="
+        + nuevoID;
+
+      const resultado =
+        document.getElementById("resultado");
+
+      resultado.style.display = "block";
+
+      resultado.innerHTML =
+
+        "<strong>Nombre:</strong> "
+        + nombre
+        + "<br><br>"
+
+        + "<strong>Especie:</strong> "
+        + especie
+        + "<br><br>"
+
+        + "<strong>Color:</strong> "
+        + color
+        + "<br><br>"
+
+        + "<strong>NUEVO ID:</strong><br>"
+        + "<span style='font-size:25px;'>"
+        + nuevoID
+        + "</span>"
+
+        + "<br><br>"
+
+        + "<strong>Enlace:</strong><br>"
+        + enlace;
+
+    } catch (error) {
+
+      alert(
+        "No se pudo consultar la base de datos."
+      );
+
+      console.error(error);
+
+    }
+
+  }
+
+</script>
+
+</body>
+</html>
