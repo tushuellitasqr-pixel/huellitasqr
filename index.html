@@ -4,192 +4,234 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>HuellaQR - Perfil de mascota</title>
+  <title>Huellitas QR</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
       margin: 0;
       padding: 20px;
-      text-align: center;
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #333;
     }
 
-    .tarjeta {
-      max-width: 500px;
+    .contenedor {
+      max-width: 520px;
       margin: 30px auto;
       background: white;
-      padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.12);
     }
 
-    #foto {
-      width: 100%;
-      max-width: 350px;
-      max-height: 350px;
-      object-fit: cover;
-      border-radius: 18px;
+    .titulo {
+      text-align: center;
       margin-bottom: 20px;
     }
 
-    h1 {
-      margin-bottom: 10px;
+    .titulo h1 {
+      margin: 0;
+      color: #287a4d;
+      font-size: 30px;
+    }
+
+    .titulo p {
+      margin-top: 6px;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .foto {
+      width: 100%;
+      max-height: 350px;
+      object-fit: cover;
+      border-radius: 16px;
+      display: block;
+      margin: 0 auto 22px;
+    }
+
+    .nombre {
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      color: #287a4d;
+      margin-bottom: 22px;
     }
 
     .dato {
-      margin: 8px 0;
-      font-size: 18px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eeeeee;
+      font-size: 16px;
     }
 
-    .etiqueta {
-      font-weight: bold;
+    .dato strong {
+      color: #444;
     }
 
     .estado {
       display: inline-block;
-      margin: 15px 0;
-      padding: 8px 15px;
+      margin: 18px 0;
+      padding: 7px 15px;
       border-radius: 20px;
-      background: #d4edda;
-      color: #155724;
+      background: #dff4e6;
+      color: #287a4d;
       font-weight: bold;
+      font-size: 14px;
+    }
+
+    .botones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
     }
 
     .boton {
       display: block;
-      margin: 12px auto;
-      padding: 12px 18px;
-      max-width: 250px;
-      border-radius: 10px;
+      text-align: center;
       text-decoration: none;
-      color: white;
+      padding: 13px;
+      border-radius: 10px;
       font-weight: bold;
-    }
-
-    .telefono {
-      background: #007bff;
-    }
-
-    .whatsapp {
-      background: #25D366;
+      color: white;
+      font-size: 16px;
     }
 
     .audio {
-      background: #6f42c1;
+      background: #6c5ce7;
+    }
+
+    .llamar {
+      background: #2196f3;
+    }
+
+    .whatsapp {
+      background: #25d366;
     }
 
     .oculto {
-      display: none;
+      display: none !important;
     }
 
-    #cargando {
-      font-size: 18px;
-      margin-top: 40px;
+    .error {
+      text-align: center;
+      color: #c0392b;
+      padding: 30px 10px;
+      font-size: 17px;
     }
 
-    #error {
-      color: #b00020;
-      font-weight: bold;
-      margin-top: 30px;
+    .cargando {
+      text-align: center;
+      color: #777;
+      padding: 30px;
+    }
+
+    .pie {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 12px;
+      color: #999;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="tarjeta">
+  <div class="contenedor">
 
-    <div id="cargando">
+    <div class="titulo">
+      <h1>🐾 Huellitas QR</h1>
+      <p>Perfil de identificación de mascota</p>
+    </div>
+
+    <div id="cargando" class="cargando">
       Cargando información...
     </div>
 
-    <div id="contenido" class="oculto">
+    <div id="perfil" class="oculto">
 
-      <img id="foto" src="" alt="Foto de la mascota">
+      <img id="foto" class="foto oculto" alt="Foto de la mascota">
 
-      <h1 id="nombre"></h1>
+      <div id="nombre" class="nombre"></div>
 
       <div class="dato">
-        <span class="etiqueta">Especie:</span>
+        <strong>Especie:</strong>
         <span id="especie"></span>
       </div>
 
-      <!-- NUEVO: SEXO -->
       <div class="dato">
-        <span class="etiqueta">Sexo:</span>
-        <span id="sexo"></span>
+        <strong>Color y características:</strong>
+        <span id="caracteristicas"></span>
       </div>
 
       <div class="dato">
-        <span class="etiqueta">Color y características:</span>
-        <span id="color"></span>
-      </div>
-
-      <!-- NUEVO: RESPONSABLE -->
-      <div class="dato" id="bloqueResponsable">
-        <span class="etiqueta">Responsable:</span>
+        <strong>Responsable:</strong>
         <span id="responsable"></span>
       </div>
 
-      <!-- NUEVO: FECHA -->
-      <div class="dato" id="bloqueFecha">
-        <span class="etiqueta">Fecha de registro:</span>
+      <div class="dato">
+        <strong>Fecha de registro:</strong>
         <span id="fecha"></span>
       </div>
 
       <div class="dato">
-        <span class="etiqueta">Código:</span>
-        <span id="idMascota"></span>
+        <strong>Código:</strong>
+        <span id="codigo"></span>
       </div>
 
-      <div id="estado" class="estado">
-        ACTIVO
+      <div>
+        <span id="estado" class="estado"></span>
       </div>
 
-      <a id="audio"
-         class="boton audio oculto"
-         href=""
-         target="_blank">
-        🔊 Escuchar sonido
-      </a>
+      <div class="botones">
 
-      <a id="telefono"
-         class="boton telefono oculto"
-         href="">
-        📞 Llamar al responsable
-      </a>
+        <a
+          id="audio"
+          class="boton audio oculto"
+          target="_blank"
+          rel="noopener noreferrer">
+          🔊 Escuchar sonido
+        </a>
 
-      <a id="whatsapp"
-         class="boton whatsapp oculto"
-         href=""
-         target="_blank">
-        💬 WhatsApp
-      </a>
+        <a
+          id="llamar"
+          class="boton llamar oculto">
+          📞 Llamar al responsable
+        </a>
+
+        <a
+          id="whatsapp"
+          class="boton whatsapp oculto"
+          target="_blank"
+          rel="noopener noreferrer">
+          💬 WhatsApp
+        </a>
+
+      </div>
+
+      <div class="pie">
+        Huellitas QR 🐾
+      </div>
 
     </div>
 
-    <div id="error" class="oculto"></div>
+    <div id="error" class="error oculto"></div>
 
   </div>
 
-
   <script>
-
-    /* =====================================================
-       CONEXIONES
-       ===================================================== */
 
     const API_MASCOTAS =
       "https://pastesheet.com/api/rbgtavcc/REGISTROS";
 
-    const API_CONTACTOS =
-      "https://pastesheet.com/api/1prjci1r/CONTACTOS";
 
-
-    /* =====================================================
-       CONVERTIR FOTO DE GOOGLE DRIVE
-       ===================================================== */
+    // --------------------------------------------------
+    // CONVERTIR ENLACES DE GOOGLE DRIVE PARA MOSTRAR FOTO
+    // --------------------------------------------------
 
     function convertirGoogleDrive(enlace) {
 
@@ -197,81 +239,131 @@
         return "";
       }
 
-      let coincidencia = enlace.match(/\/d\/([^/]+)/);
+      const texto = String(enlace);
 
-      if (!coincidencia) {
-        coincidencia = enlace.match(/[?&]id=([^&]+)/);
+      let id = "";
+
+      const parametro = texto.match(/[?&]id=([^&]+)/);
+
+      if (parametro) {
+        id = parametro[1];
       }
 
-      if (coincidencia) {
+      if (!id) {
 
-        const archivoID = coincidencia[1];
+        const archivo = texto.match(
+          /\/file\/d\/([^/]+)/
+        );
 
-        return "https://drive.google.com/thumbnail?id="
-          + archivoID
-          + "&sz=w1000";
+        if (archivo) {
+          id = archivo[1];
+        }
+
       }
 
-      return enlace;
+      if (!id) {
+        return texto;
+      }
+
+      return "https://drive.google.com/thumbnail?id=" +
+        id +
+        "&sz=w1000";
     }
 
 
-    /* =====================================================
-       CONVERTIR FECHA DE GOOGLE SHEETS
-       ===================================================== */
+    // --------------------------------------------------
+    // FORMATEAR FECHA
+    // --------------------------------------------------
 
-    function convertirFecha(valor) {
+    function formatearFecha(valor) {
 
       if (!valor) {
         return "";
       }
 
-      const numero = Number(valor);
+      // Fecha en formato DD/MM/YYYY
+      if (
+        typeof valor === "string" &&
+        /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(valor)
+      ) {
+        return valor;
+      }
 
-      if (!isNaN(numero) && numero > 30000) {
+      // Fecha ISO
+      if (
+        typeof valor === "string" &&
+        valor.includes("-")
+      ) {
 
-        const fecha = new Date(
-          Date.UTC(1899, 11, 30) +
-          numero * 86400000
-        );
+        const fecha = new Date(valor);
 
-        const dia = String(
-          fecha.getUTCDate()
-        ).padStart(2, "0");
+        if (!isNaN(fecha.getTime())) {
 
-        const mes = String(
-          fecha.getUTCMonth() + 1
-        ).padStart(2, "0");
+          return fecha.toLocaleDateString(
+            "es-EC",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric"
+            }
+          );
+        }
+      }
 
-        const año =
-          fecha.getUTCFullYear();
+      // Número serial de Google Sheets
+      if (!isNaN(valor)) {
 
-        return dia + "/" + mes + "/" + año;
+        const numero = Number(valor);
+
+        if (numero > 30000) {
+
+          const fecha =
+            new Date(
+              Date.UTC(1899, 11, 30) +
+              numero * 86400000
+            );
+
+          return fecha.toLocaleDateString(
+            "es-EC",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              timeZone: "UTC"
+            }
+          );
+        }
       }
 
       return valor;
     }
 
 
-    /* =====================================================
-       OBTENER ID DE LA MASCOTA
-       ===================================================== */
+    // --------------------------------------------------
+    // OBTENER ID DESDE LA URL
+    // --------------------------------------------------
 
     const parametros =
-      new URLSearchParams(window.location.search);
+      new URLSearchParams(
+        window.location.search
+      );
 
-    const id =
+    const idBuscado =
       parametros.get("id");
 
 
-    /* =====================================================
-       MOSTRAR ERROR
-       ===================================================== */
+    // --------------------------------------------------
+    // MOSTRAR ERROR
+    // --------------------------------------------------
 
     function mostrarError(mensaje) {
 
       document
         .getElementById("cargando")
+        .classList.add("oculto");
+
+      document
+        .getElementById("perfil")
         .classList.add("oculto");
 
       const error =
@@ -283,320 +375,110 @@
     }
 
 
-    /* =====================================================
-       CARGAR MASCOTA
-       ===================================================== */
+    // --------------------------------------------------
+    // CARGAR MASCOTA
+    // --------------------------------------------------
 
     async function cargarMascota() {
 
+      if (!idBuscado) {
+
+        mostrarError(
+          "No se encontró el código de la mascota."
+        );
+
+        return;
+      }
+
       try {
 
-        if (!id) {
+        const respuesta =
+          await fetch(API_MASCOTAS);
 
-          mostrarError(
-            "No se encontró el código de la mascota."
-          );
-
-          return;
-        }
-
-
-        /* ===============================================
-           CONSULTAR LAS BASES DE DATOS
-           =============================================== */
-
-        const [respuestaMascotas, respuestaContactos] =
-          await Promise.all([
-
-            fetch(API_MASCOTAS),
-
-            fetch(API_CONTACTOS)
-
-          ]);
-
-
-        if (!respuestaMascotas.ok) {
-
+        if (!respuesta.ok) {
           throw new Error(
-            "No se pudo consultar la base de mascotas."
+            "No se pudo conectar con la base de datos."
           );
-
         }
-
-
-        /* ===============================================
-           CONVERTIR RESPUESTAS A JSON
-           =============================================== */
 
         const datosMascotas =
-          await respuestaMascotas.json();
-
-
-        let datosContactos = {
-          data: []
-        };
-
-
-        if (respuestaContactos.ok) {
-
-          try {
-
-            datosContactos =
-              await respuestaContactos.json();
-
-          } catch (error) {
-
-            datosContactos = {
-              data: []
-            };
-
-          }
-
-        }
-
-
-        /* ===============================================
-           OBTENER LISTAS
-           =============================================== */
+          await respuesta.json();
 
         const mascotas =
           datosMascotas.data || [];
 
-        const contactos =
-          datosContactos.data || [];
-
-
-        /* ===============================================
-           BUSCAR ID
-           =============================================== */
-
-        const idBuscado =
-          id.trim().toUpperCase();
-
-
         const mascota =
-          mascotas.find(animal =>
-
-            String(animal.ID)
-              .trim()
-              .toUpperCase() === idBuscado
-
+          mascotas.find(
+            animal =>
+              String(animal.ID).trim().toUpperCase() ===
+              String(idBuscado).trim().toUpperCase()
           );
 
-
-        /* ===============================================
-           BUSCAR CONTACTO
-           =============================================== */
-
-        const contacto =
-          contactos.find(item =>
-
-            String(item.ID)
-              .trim()
-              .toUpperCase() === idBuscado
-
-          ) || {};
-
-
-        /* ===============================================
-           SI NO EXISTE LA MASCOTA
-           =============================================== */
 
         if (!mascota) {
 
           mostrarError(
-            "No se encontró una mascota con el código: "
-            + idBuscado
+            "No se encontró una mascota con el código " +
+            idBuscado
           );
 
           return;
         }
 
 
-        /* ===============================================
-           NOMBRE
-           =============================================== */
+        // ------------------------------------------------
+        // DATOS PRINCIPALES
+        // ------------------------------------------------
 
-        document
-          .getElementById("nombre")
-          .textContent =
-            mascota["Nombre de la mascota"] || "";
+        document.getElementById("nombre").textContent =
+          mascota["Nombre de la mascota"] || "";
 
+        document.getElementById("especie").textContent =
+          mascota["Especie"] || "";
 
-        /* ===============================================
-           ESPECIE
-           =============================================== */
+        document.getElementById("caracteristicas").textContent =
+          mascota["Color y características"] || "";
 
-        document
-          .getElementById("especie")
-          .textContent =
-            mascota["Especie"] || "";
-
-
-        /* ===============================================
-           SEXO
-           =============================================== */
-
-        document
-          .getElementById("sexo")
-          .textContent =
-            mascota["Sexo"] || "";
-
-
-        /* ===============================================
-           COLOR Y CARACTERÍSTICAS
-           =============================================== */
-
-        document
-          .getElementById("color")
-          .textContent =
-            mascota["Color y características"] || "";
-
-
-        /* ===============================================
-           RESPONSABLE
-           =============================================== */
-
-        const responsable =
+        document.getElementById("responsable").textContent =
           mascota["Nombre del responsable"] || "";
 
+        document.getElementById("fecha").textContent =
+          formatearFecha(
+            mascota["Fecha de registro"]
+          );
 
-        if (responsable) {
+        document.getElementById("codigo").textContent =
+          mascota["ID"] || "";
 
-          document
-            .getElementById("responsable")
-            .textContent =
-              responsable;
-
-        } else {
-
-          document
-            .getElementById("bloqueResponsable")
-            .classList.add("oculto");
-
-        }
+        document.getElementById("estado").textContent =
+          mascota["Estado"] || "";
 
 
-        /* ===============================================
-           FECHA DE REGISTRO
-           =============================================== */
-
-        const fecha =
-          mascota["Fecha de registro"] || "";
-
-
-        if (fecha) {
-
-          document
-            .getElementById("fecha")
-            .textContent =
-              convertirFecha(fecha);
-
-        } else {
-
-          document
-            .getElementById("bloqueFecha")
-            .classList.add("oculto");
-
-        }
-
-
-        /* ===============================================
-           ID
-           =============================================== */
-
-        document
-          .getElementById("idMascota")
-          .textContent =
-            mascota["ID"] || idBuscado;
-
-
-        /* ===============================================
-           FOTO
-           =============================================== */
+        // ------------------------------------------------
+        // FOTO
+        // ------------------------------------------------
 
         if (mascota["Foto de la mascota"]) {
 
           const foto =
+            document.getElementById("foto");
+
+          foto.src =
             convertirGoogleDrive(
               mascota["Foto de la mascota"]
             );
 
-          document
-            .getElementById("foto")
-            .src = foto;
+          foto.classList.remove("oculto");
 
+          foto.onerror = function() {
+            this.classList.add("oculto");
+          };
         }
 
 
-        /* ===============================================
-           TELÉFONO
-           =============================================== */
-
-        const telefono =
-          mascota["Teléfono de contacto"] ||
-          contacto["TELEFONO"] ||
-          contacto["Phone"] ||
-          contacto["PHONE"];
-
-
-        if (telefono) {
-
-          const botonTelefono =
-            document.getElementById("telefono");
-
-          botonTelefono.href =
-            "tel:" + telefono;
-
-          botonTelefono.classList.remove("oculto");
-
-        }
-
-
-        /* ===============================================
-           WHATSAPP
-           =============================================== */
-
-        const whatsapp =
-          mascota["WhatsApp"] ||
-          contacto["WHATSAPP"] ||
-          contacto["WhatsApp"] ||
-          contacto["WHATSAPP_URL"];
-
-
-        if (whatsapp) {
-
-          const botonWhatsapp =
-            document.getElementById("whatsapp");
-
-
-          let enlaceWhatsApp =
-            String(whatsapp).trim();
-
-
-          if (
-            !enlaceWhatsApp.startsWith("http://") &&
-            !enlaceWhatsApp.startsWith("https://")
-          ) {
-
-            enlaceWhatsApp =
-              "https://wa.me/"
-              + enlaceWhatsApp.replace(/\D/g, "");
-
-          }
-
-
-          botonWhatsapp.href =
-            enlaceWhatsApp;
-
-          botonWhatsapp.classList.remove("oculto");
-
-        }
-
-
-        /* ===============================================
-           AUDIO
-           =============================================== */
+        // ------------------------------------------------
+        // AUDIO
+        // ------------------------------------------------
 
         if (mascota["Audio"]) {
 
@@ -607,30 +489,77 @@
             mascota["Audio"];
 
           botonAudio.classList.remove("oculto");
-
         }
 
 
-        /* ===============================================
-           ESTADO
-           =============================================== */
+        // ------------------------------------------------
+        // TELÉFONO
+        // ------------------------------------------------
 
-        document
-          .getElementById("estado")
-          .textContent =
-            mascota["Estado"] || "ACTIVO";
+        if (mascota["Teléfono de contacto"]) {
+
+          const telefono =
+            String(
+              mascota["Teléfono de contacto"]
+            ).replace(
+              /\D/g,
+              ""
+            );
+
+          if (telefono) {
+
+            const botonLlamar =
+              document.getElementById("llamar");
+
+            botonLlamar.href =
+              "tel:" + telefono;
+
+            botonLlamar.classList.remove(
+              "oculto"
+            );
+          }
+        }
 
 
-        /* ===============================================
-           MOSTRAR PERFIL
-           =============================================== */
+        // ------------------------------------------------
+        // WHATSAPP
+        // ------------------------------------------------
+
+        if (mascota["WhatsApp"]) {
+
+          const whatsapp =
+            String(
+              mascota["WhatsApp"]
+            ).replace(
+              /\D/g,
+              ""
+            );
+
+          if (whatsapp) {
+
+            const botonWhatsApp =
+              document.getElementById("whatsapp");
+
+            botonWhatsApp.href =
+              "https://wa.me/" + whatsapp;
+
+            botonWhatsApp.classList.remove(
+              "oculto"
+            );
+          }
+        }
+
+
+        // ------------------------------------------------
+        // MOSTRAR PERFIL
+        // ------------------------------------------------
 
         document
           .getElementById("cargando")
           .classList.add("oculto");
 
         document
-          .getElementById("contenido")
+          .getElementById("perfil")
           .classList.remove("oculto");
 
 
@@ -641,15 +570,13 @@
         mostrarError(
           "No se pudo cargar la información de la mascota."
         );
-
       }
-
     }
 
 
-    /* =====================================================
-       INICIAR
-       ===================================================== */
+    // --------------------------------------------------
+    // INICIAR
+    // --------------------------------------------------
 
     cargarMascota();
 
