@@ -115,9 +115,27 @@
         <span id="especie"></span>
       </div>
 
+      <!-- NUEVO: SEXO -->
+      <div class="dato">
+        <span class="etiqueta">Sexo:</span>
+        <span id="sexo"></span>
+      </div>
+
       <div class="dato">
         <span class="etiqueta">Color y características:</span>
         <span id="color"></span>
+      </div>
+
+      <!-- NUEVO: RESPONSABLE -->
+      <div class="dato" id="bloqueResponsable">
+        <span class="etiqueta">Responsable:</span>
+        <span id="responsable"></span>
+      </div>
+
+      <!-- NUEVO: FECHA -->
+      <div class="dato" id="bloqueFecha">
+        <span class="etiqueta">Fecha de registro:</span>
+        <span id="fecha"></span>
       </div>
 
       <div class="dato">
@@ -162,12 +180,9 @@
        CONEXIONES
        ===================================================== */
 
-    // NUEVA BASE DE DATOS DE MASCOTAS
     const API_MASCOTAS =
       "https://pastesheet.com/api/rbgtavcc/REGISTROS";
 
-    // ANTIGUA BASE DE DATOS DE CONTACTOS
-    // La mantenemos por ahora para no romper el sistema anterior
     const API_CONTACTOS =
       "https://pastesheet.com/api/1prjci1r/CONTACTOS";
 
@@ -202,7 +217,44 @@
 
 
     /* =====================================================
-       OBTENER ID DE LA MASCOTA DESDE LA URL
+       CONVERTIR FECHA DE GOOGLE SHEETS
+       ===================================================== */
+
+    function convertirFecha(valor) {
+
+      if (!valor) {
+        return "";
+      }
+
+      const numero = Number(valor);
+
+      if (!isNaN(numero) && numero > 30000) {
+
+        const fecha = new Date(
+          Date.UTC(1899, 11, 30) +
+          numero * 86400000
+        );
+
+        const dia = String(
+          fecha.getUTCDate()
+        ).padStart(2, "0");
+
+        const mes = String(
+          fecha.getUTCMonth() + 1
+        ).padStart(2, "0");
+
+        const año =
+          fecha.getUTCFullYear();
+
+        return dia + "/" + mes + "/" + año;
+      }
+
+      return valor;
+    }
+
+
+    /* =====================================================
+       OBTENER ID DE LA MASCOTA
        ===================================================== */
 
     const parametros =
@@ -284,12 +336,6 @@
           data: []
         };
 
-
-        /*
-          El sistema de contactos es antiguo.
-          Si por alguna razón falla, la mascota
-          igualmente puede mostrarse.
-        */
 
         if (respuestaContactos.ok) {
 
@@ -388,6 +434,16 @@
 
 
         /* ===============================================
+           SEXO
+           =============================================== */
+
+        document
+          .getElementById("sexo")
+          .textContent =
+            mascota["Sexo"] || "";
+
+
+        /* ===============================================
            COLOR Y CARACTERÍSTICAS
            =============================================== */
 
@@ -395,6 +451,54 @@
           .getElementById("color")
           .textContent =
             mascota["Color y características"] || "";
+
+
+        /* ===============================================
+           RESPONSABLE
+           =============================================== */
+
+        const responsable =
+          mascota["Nombre del responsable"] || "";
+
+
+        if (responsable) {
+
+          document
+            .getElementById("responsable")
+            .textContent =
+              responsable;
+
+        } else {
+
+          document
+            .getElementById("bloqueResponsable")
+            .classList.add("oculto");
+
+        }
+
+
+        /* ===============================================
+           FECHA DE REGISTRO
+           =============================================== */
+
+        const fecha =
+          mascota["Fecha de registro"] || "";
+
+
+        if (fecha) {
+
+          document
+            .getElementById("fecha")
+            .textContent =
+              convertirFecha(fecha);
+
+        } else {
+
+          document
+            .getElementById("bloqueFecha")
+            .classList.add("oculto");
+
+        }
 
 
         /* ===============================================
@@ -466,11 +570,6 @@
             document.getElementById("whatsapp");
 
 
-          /*
-            Si el usuario puso solamente el número,
-            construimos automáticamente el enlace.
-          */
-
           let enlaceWhatsApp =
             String(whatsapp).trim();
 
@@ -510,6 +609,16 @@
           botonAudio.classList.remove("oculto");
 
         }
+
+
+        /* ===============================================
+           ESTADO
+           =============================================== */
+
+        document
+          .getElementById("estado")
+          .textContent =
+            mascota["Estado"] || "ACTIVO";
 
 
         /* ===============================================
