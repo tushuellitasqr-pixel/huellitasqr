@@ -47,9 +47,15 @@
       color: white;
     }
 
+    button:hover {
+      opacity: 0.85;
+    }
+
     #qr {
       margin: 30px auto 20px;
       width: 236px;
+      height: 236px;
+      position: relative;
     }
 
     #descargar {
@@ -94,6 +100,10 @@
   <script>
 
     const TAMANO_QR = 236;
+
+    // Imagen que subiste al repositorio de GitHub
+    const LOGO_MASCOTAS = "logo-mascotas.png";
+
 
     function generarQR() {
 
@@ -145,24 +155,111 @@
         .trim()
         .toUpperCase();
 
-      const canvas =
+      const qrCanvas =
         document.querySelector("#qr canvas");
 
-      if (!canvas) {
+      if (!qrCanvas) {
         alert("Primero genera el QR");
         return;
       }
 
-      const enlace =
-        document.createElement("a");
+      const canvasFinal =
+        document.createElement("canvas");
 
-      enlace.download =
-        id + "_QR_20mm.png";
+      const margen = 20;
 
-      enlace.href =
-        canvas.toDataURL("image/png");
+      canvasFinal.width =
+        TAMANO_QR + margen * 2;
 
-      enlace.click();
+      canvasFinal.height =
+        TAMANO_QR + margen * 2;
+
+      const ctx =
+        canvasFinal.getContext("2d");
+
+      // Fondo blanco
+      ctx.fillStyle = "#ffffff";
+
+      ctx.fillRect(
+        0,
+        0,
+        canvasFinal.width,
+        canvasFinal.height
+      );
+
+      // QR
+      ctx.drawImage(
+        qrCanvas,
+        margen,
+        margen,
+        TAMANO_QR,
+        TAMANO_QR
+      );
+
+      // Tamaño del logo
+      const logoSize = 48;
+
+      const logoX =
+        (canvasFinal.width - logoSize) / 2;
+
+      const logoY =
+        (canvasFinal.height - logoSize) / 2;
+
+      // Fondo blanco detrás del logo
+      const fondoLogo = 58;
+
+      const fondoX =
+        (canvasFinal.width - fondoLogo) / 2;
+
+      const fondoY =
+        (canvasFinal.height - fondoLogo) / 2;
+
+      ctx.fillStyle = "#ffffff";
+
+      ctx.fillRect(
+        fondoX,
+        fondoY,
+        fondoLogo,
+        fondoLogo
+      );
+
+      // Cargar logo
+      const logo =
+        new Image();
+
+      logo.onload = function() {
+
+        ctx.drawImage(
+          logo,
+          logoX,
+          logoY,
+          logoSize,
+          logoSize
+        );
+
+        const enlace =
+          document.createElement("a");
+
+        enlace.download =
+          id + "_QR_20mm.png";
+
+        enlace.href =
+          canvasFinal.toDataURL("image/png");
+
+        enlace.click();
+      };
+
+      logo.onerror = function() {
+
+        alert(
+          "No se pudo cargar logo-mascotas.png. " +
+          "Verifica que el archivo esté en el repositorio de GitHub."
+        );
+
+      };
+
+      logo.src =
+        LOGO_MASCOTAS;
     }
 
   </script>
