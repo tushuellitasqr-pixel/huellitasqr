@@ -65,10 +65,10 @@
 
     #logoCentro {
       position: absolute;
-      width: 50px;
-      height: 50px;
-      left: 93px;
-      top: 93px;
+      width: 64px;
+      height: 64px;
+      left: 86px;
+      top: 86px;
       object-fit: contain;
       background: white;
       padding: 6px;
@@ -249,7 +249,7 @@
       );
 
       /*
-        Espacio blanco para el logo
+        Espacio blanco detrás del logo
       */
 
       const centroX =
@@ -258,7 +258,7 @@
       const centroY =
         canvas.height / 2;
 
-      const fondoLogo = 64;
+      const fondoLogo = 78;
 
       ctx.fillStyle = "#ffffff";
 
@@ -270,7 +270,7 @@
       );
 
       /*
-        Logo
+        Logo central
       */
 
       if (
@@ -278,7 +278,7 @@
         logo.naturalWidth > 0
       ) {
 
-        const tamanoLogo = 50;
+        const tamanoLogo = 64;
 
         ctx.drawImage(
           logo,
