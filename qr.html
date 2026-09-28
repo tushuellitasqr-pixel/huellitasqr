@@ -65,15 +65,15 @@
 
     #logoCentro {
       position: absolute;
-      width: 46px;
-      height: 46px;
-      left: 90px;
-      top: 90px;
+      width: 50px;
+      height: 50px;
+      left: 93px;
+      top: 93px;
       object-fit: contain;
       background: white;
-      padding: 7px;
+      padding: 6px;
       border-radius: 8px;
-      box-sizing: content-box;
+      box-sizing: border-box;
       display: none;
       z-index: 10;
     }
@@ -115,7 +115,7 @@
 
     <img
       id="logoCentro"
-      src="logo%20qr.jpg"
+      src="https://tushuellitasqr-pixel.github.io/huellitasqr/logo%20qr.jpg"
       alt="Logo Huellitas QR"
     >
 
@@ -131,8 +131,8 @@
 
     const TAMANO_QR = 236;
 
-    const LOGO_MASCOTAS =
-      "logo%20qr.jpg";
+    const URL_LOGO =
+      "https://tushuellitasqr-pixel.github.io/huellitasqr/logo%20qr.jpg";
 
 
     function generarQR() {
@@ -171,7 +171,15 @@
       const logo =
         document.getElementById("logoCentro");
 
-      logo.style.display = "block";
+      logo.src = URL_LOGO;
+
+      logo.onload = function() {
+        logo.style.display = "block";
+      };
+
+      logo.onerror = function() {
+        logo.style.display = "none";
+      };
 
       document.getElementById("enlace").innerHTML =
         "<strong>ID:</strong> " + id +
@@ -206,6 +214,9 @@
         return;
       }
 
+      const logo =
+        document.getElementById("logoCentro");
+
       const canvas =
         document.createElement("canvas");
 
@@ -220,7 +231,6 @@
       const ctx =
         canvas.getContext("2d");
 
-      // Fondo blanco
       ctx.fillStyle = "#ffffff";
 
       ctx.fillRect(
@@ -230,7 +240,6 @@
         canvas.height
       );
 
-      // Dibujar QR
       ctx.drawImage(
         qrCanvas,
         margen,
@@ -239,71 +248,65 @@
         TAMANO_QR
       );
 
-      const logo =
-        document.getElementById("logoCentro");
+      /*
+        Espacio blanco para el logo
+      */
 
+      const centroX =
+        canvas.width / 2;
 
-      function terminarDescarga() {
+      const centroY =
+        canvas.height / 2;
 
-        const enlace =
-          document.createElement("a");
+      const fondoLogo = 64;
 
-        enlace.download =
-          id + "_QR_20mm.png";
+      ctx.fillStyle = "#ffffff";
 
-        enlace.href =
-          canvas.toDataURL("image/png");
+      ctx.fillRect(
+        centroX - fondoLogo / 2,
+        centroY - fondoLogo / 2,
+        fondoLogo,
+        fondoLogo
+      );
 
-        document.body.appendChild(enlace);
+      /*
+        Logo
+      */
 
-        enlace.click();
-
-        document.body.removeChild(enlace);
-      }
-
-
-      // Si el logo está cargado, incluirlo
       if (
         logo.complete &&
         logo.naturalWidth > 0
       ) {
 
-        const logoSize = 46;
-        const fondo = 60;
+        const tamanoLogo = 50;
 
-        const centroX =
-          canvas.width / 2;
-
-        const centroY =
-          canvas.height / 2;
-
-        // Área blanca detrás del logo
-        ctx.fillStyle = "#ffffff";
-
-        ctx.fillRect(
-          centroX - fondo / 2,
-          centroY - fondo / 2,
-          fondo,
-          fondo
-        );
-
-        // Logo
         ctx.drawImage(
           logo,
-          centroX - logoSize / 2,
-          centroY - logoSize / 2,
-          logoSize,
-          logoSize
+          centroX - tamanoLogo / 2,
+          centroY - tamanoLogo / 2,
+          tamanoLogo,
+          tamanoLogo
         );
-
-        terminarDescarga();
-
-      } else {
-
-        // Si el logo no carga,
-        // el QR se descarga igualmente
-        terminarDescarga();
       }
+
+      /*
+        Descargar
+      */
+
+      const enlace =
+        document.createElement("a");
+
+      enlace.download =
+        id + "_QR_20mm.png";
+
+      enlace.href =
+        canvas.toDataURL("image/png");
+
+      document.body.appendChild(enlace);
+
+      enlace.click();
+
+      document.body.removeChild(enlace);
     }
 
   </script>
