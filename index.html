@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HuellaQR - Perfil de mascota</title>
+  <title>HuellaQR</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f7f8;
       margin: 0;
       padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
       color: #333;
     }
 
     .contenedor {
       max-width: 500px;
-      margin: auto;
+      margin: 0 auto;
       background: white;
-      border-radius: 20px;
       padding: 25px;
+      border-radius: 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.12);
     }
 
@@ -36,58 +36,65 @@
     }
 
     .foto {
+      display: block;
       width: 100%;
-      max-height: 350px;
+      max-height: 400px;
       object-fit: cover;
       border-radius: 15px;
       margin-bottom: 20px;
     }
 
     .dato {
-      margin: 12px 0;
-      padding: 10px;
       background: #f7f7f7;
+      padding: 12px;
+      margin: 8px 0;
       border-radius: 10px;
     }
 
     .dato strong {
       display: inline-block;
-      min-width: 145px;
+      margin-right: 5px;
     }
 
     .boton {
       display: block;
       text-align: center;
-      padding: 12px;
-      margin-top: 15px;
-      border-radius: 10px;
       text-decoration: none;
-      font-weight: bold;
-    }
-
-    .whatsapp {
-      background: #25D366;
       color: white;
+      padding: 13px;
+      margin-top: 12px;
+      border-radius: 10px;
+      font-weight: bold;
     }
 
     .telefono {
       background: #0d6efd;
-      color: white;
+    }
+
+    .whatsapp {
+      background: #25D366;
     }
 
     .audio {
       margin-top: 20px;
+      padding: 15px;
+      background: #f7f7f7;
+      border-radius: 10px;
       text-align: center;
+    }
+
+    audio {
+      width: 100%;
+    }
+
+    .mensaje {
+      text-align: center;
+      padding: 30px 10px;
     }
 
     .error {
-      text-align: center;
       color: #c62828;
       font-weight: bold;
-    }
-
-    .cargando {
-      text-align: center;
     }
   </style>
 </head>
@@ -96,30 +103,17 @@
 
 <div class="contenedor">
 
-  <div id="contenido" class="cargando">
-    Cargando información de la mascota...
+  <div id="contenido" class="mensaje">
+    Cargando información...
   </div>
 
 </div>
+
 
 <script>
 
 const API_MASCOTAS =
   "https://pastesheet.com/api/rbgtavcc/REGISTROS";
-
-
-function convertirImagen(url) {
-
-  if (!url) return "";
-
-  const match = url.match(/[-\w]{25,}/);
-
-  if (match) {
-    return "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w1000";
-  }
-
-  return url;
-}
 
 
 function obtenerID() {
@@ -130,16 +124,67 @@ function obtenerID() {
 }
 
 
+function convertirImagen(url) {
+
+  if (!url) return "";
+
+  url = String(url).trim();
+
+  /*
+    Si es un enlace de Google Drive,
+    intenta obtener el ID del archivo.
+  */
+
+  let coincidencia = url.match(/[-\w]{25,}/);
+
+  if (coincidencia) {
+
+    return "https://drive.google.com/thumbnail?id=" +
+           coincidencia[0] +
+           "&sz=w1000";
+
+  }
+
+  return url;
+}
+
+
+function obtenerValor(objeto, nombres) {
+
+  for (const nombre of nombres) {
+
+    if (
+      objeto[nombre] !== undefined &&
+      objeto[nombre] !== null &&
+      String(objeto[nombre]).trim() !== ""
+    ) {
+
+      return String(objeto[nombre]).trim();
+
+    }
+
+  }
+
+  return "";
+}
+
+
 async function cargarMascota() {
 
-  const id = obtenerID();
+  const contenido =
+    document.getElementById("contenido");
 
-  const contenido = document.getElementById("contenido");
+  const id =
+    obtenerID();
+
 
   if (!id) {
 
-    contenido.innerHTML =
-      '<p class="error">No se indicó el código de la mascota.</p>';
+    contenido.innerHTML = `
+      <p class="error">
+        No se indicó el código de la mascota.
+      </p>
+    `;
 
     return;
   }
@@ -147,191 +192,348 @@ async function cargarMascota() {
 
   try {
 
-    const respuesta = await fetch(API_MASCOTAS);
+    const respuesta =
+      await fetch(API_MASCOTAS);
+
 
     if (!respuesta.ok) {
-      throw new Error("No se pudo conectar con la base de datos.");
+
+      throw new Error(
+        "No se pudo conectar con PasteSheet"
+      );
+
     }
 
-    const datos = await respuesta.json();
 
-    const mascotas = datos.datos || datos.data || datos;
+    const resultado =
+      await respuesta.json();
 
-    const animal = mascotas.find(
-      mascota => String(mascota.ID).trim() === String(id).trim()
-    );
+
+    const mascotas =
+      resultado.datos ||
+      resultado.data ||
+      resultado;
+
+
+    if (!Array.isArray(mascotas)) {
+
+      throw new Error(
+        "La respuesta de PasteSheet no tiene el formato esperado."
+      );
+
+    }
+
+
+    const animal =
+      mascotas.find(
+        mascota =>
+          String(
+            obtenerValor(
+              mascota,
+              ["ID", "Id", "id"]
+            )
+          ).trim() ===
+          String(id).trim()
+      );
 
 
     if (!animal) {
 
-      contenido.innerHTML =
-        '<p class="error">No se encontró una mascota con el código: ' +
-        id +
-        '</p>';
+      contenido.innerHTML = `
+        <p class="error">
+          No se encontró una mascota con el código:
+          ${id}
+        </p>
+      `;
 
       return;
     }
 
 
+    /*
+      DATOS DE LA MASCOTA
+    */
+
     const nombre =
-      animal.Nombre ||
-      animal.nombre ||
-      "Sin nombre";
+      obtenerValor(
+        animal,
+        ["Nombre", "nombre"]
+      );
 
 
     const especie =
-      animal.Especie ||
-      animal.especie ||
-      "No registrada";
+      obtenerValor(
+        animal,
+        ["Especie", "especie"]
+      );
 
 
     const sexo =
-      animal.Sexo ||
-      animal.sexo ||
-      "No registrado";
+      obtenerValor(
+        animal,
+        [
+          "Sexo",
+          "SEXO",
+          "sexo"
+        ]
+      );
 
 
     const caracteristicas =
-      animal.Características ||
-      animal.Caracteristicas ||
-      animal.caracteristica ||
-      "No registradas";
+      obtenerValor(
+        animal,
+        [
+          "Características",
+          "Caracteristicas",
+          "características",
+          "caracteristicas"
+        ]
+      );
 
 
     const foto =
-      animal.Foto ||
-      animal.foto ||
-      "";
+      obtenerValor(
+        animal,
+        ["Foto", "foto"]
+      );
 
 
     const audio =
-      animal.Audio ||
-      animal.audio ||
-      "";
+      obtenerValor(
+        animal,
+        ["Audio", "audio"]
+      );
 
 
     const telefono =
-      animal.Teléfono ||
-      animal.Telefono ||
-      animal.telefono ||
-      "";
+      obtenerValor(
+        animal,
+        [
+          "Teléfono",
+          "Telefono",
+          "teléfono",
+          "telefono"
+        ]
+      );
 
 
     const whatsapp =
-      animal.WhatsApp ||
-      animal.whatsapp ||
-      "";
+      obtenerValor(
+        animal,
+        [
+          "WhatsApp",
+          "Whatsapp",
+          "whatsapp"
+        ]
+      );
 
 
     const responsable =
-      animal.Responsable ||
-      animal.responsable ||
-      "";
+      obtenerValor(
+        animal,
+        [
+          "Responsable",
+          "responsable"
+        ]
+      );
 
 
     const fecha =
-      animal["Fecha de registro"] ||
-      animal.Fecha ||
-      animal.fecha ||
-      "";
+      obtenerValor(
+        animal,
+        [
+          "Fecha de registro",
+          "Fecha de Registro",
+          "fecha de registro",
+          "Fecha",
+          "fecha",
+          "Marca temporal"
+        ]
+      );
 
 
     const estado =
-      animal.Estado ||
-      animal.estado ||
-      "ACTIVO";
+      obtenerValor(
+        animal,
+        [
+          "Estado",
+          "estado"
+        ]
+      ) || "ACTIVO";
 
 
-    let html = "";
+    /*
+      CONSTRUCCIÓN DEL PERFIL
+    */
 
-    html += `
+    let html = `
+
       <h1>🐾 ${nombre}</h1>
 
       <div class="estado">
         ${estado}
       </div>
+
     `;
 
+
+    /*
+      FOTO
+    */
 
     if (foto) {
 
       html += `
+
         <img
           class="foto"
           src="${convertirImagen(foto)}"
           alt="Foto de ${nombre}"
         >
+
       `;
 
     }
 
 
-    html += `
-      <div class="dato">
-        <strong>Especie:</strong>
-        ${especie}
-      </div>
+    /*
+      ESPECIE
+    */
 
-      <div class="dato">
-        <strong>Sexo:</strong>
-        ${sexo}
-      </div>
+    if (especie) {
 
-      <div class="dato">
-        <strong>Características:</strong>
-        ${caracteristicas}
-      </div>
+      html += `
 
-      <div class="dato">
-        <strong>ID:</strong>
-        ${animal.ID}
-      </div>
-    `;
+        <div class="dato">
+          <strong>Especie:</strong>
+          ${especie}
+        </div>
 
+      `;
+
+    }
+
+
+    /*
+      SEXO
+    */
+
+    if (sexo) {
+
+      html += `
+
+        <div class="dato">
+          <strong>Sexo:</strong>
+          ${sexo}
+        </div>
+
+      `;
+
+    }
+
+
+    /*
+      CARACTERÍSTICAS
+    */
+
+    if (caracteristicas) {
+
+      html += `
+
+        <div class="dato">
+          <strong>Características:</strong>
+          ${caracteristicas}
+        </div>
+
+      `;
+
+    }
+
+
+    /*
+      RESPONSABLE
+    */
 
     if (responsable) {
 
       html += `
+
         <div class="dato">
           <strong>Responsable:</strong>
           ${responsable}
         </div>
+
       `;
 
     }
 
+
+    /*
+      FECHA
+    */
 
     if (fecha) {
 
       html += `
+
         <div class="dato">
           <strong>Fecha de registro:</strong>
           ${fecha}
         </div>
+
       `;
 
     }
 
 
+    /*
+      ID
+    */
+
+    html += `
+
+      <div class="dato">
+        <strong>ID:</strong>
+        ${id}
+      </div>
+
+    `;
+
+
+    /*
+      TELÉFONO
+    */
+
     if (telefono) {
 
       html += `
+
         <a
           class="boton telefono"
           href="tel:${telefono}"
         >
           📞 Llamar
         </a>
+
       `;
 
     }
 
 
+    /*
+      WHATSAPP
+    */
+
     if (whatsapp) {
 
-      let enlaceWhatsApp = whatsapp;
+      let enlaceWhatsApp =
+        whatsapp;
 
-      if (!whatsapp.startsWith("http")) {
+
+      if (
+        !whatsapp.startsWith("http://") &&
+        !whatsapp.startsWith("https://")
+      ) {
 
         enlaceWhatsApp =
           "https://wa.me/" +
@@ -339,7 +541,9 @@ async function cargarMascota() {
 
       }
 
+
       html += `
+
         <a
           class="boton whatsapp"
           href="${enlaceWhatsApp}"
@@ -347,39 +551,63 @@ async function cargarMascota() {
         >
           💬 WhatsApp
         </a>
+
       `;
 
     }
 
+
+    /*
+      AUDIO
+    */
 
     if (audio) {
 
       html += `
+
         <div class="audio">
 
-          <p><strong>🔊 Sonido de la mascota</strong></p>
+          <strong>
+            🔊 Sonido de ${nombre}
+          </strong>
 
-          <audio controls style="width:100%;">
-            <source src="${audio}">
-            Tu navegador no puede reproducir este audio.
+          <br><br>
+
+          <audio controls>
+
+            <source
+              src="${audio}"
+              type="audio/mpeg"
+            >
+
+            Tu navegador no puede reproducir
+            este audio.
+
           </audio>
 
         </div>
+
       `;
 
     }
 
 
-    contenido.innerHTML = html;
+    contenido.innerHTML =
+      html;
+
 
   } catch (error) {
 
     console.error(error);
 
+
     contenido.innerHTML = `
+
       <p class="error">
-        No se pudo cargar la información de la mascota.
+        No se pudo cargar la información
+        de la mascota.
       </p>
+
     `;
 
   }
