@@ -47,10 +47,6 @@
       color: white;
     }
 
-    button:hover {
-      opacity: 0.85;
-    }
-
     #zonaQR {
       position: relative;
       width: 236px;
@@ -65,14 +61,14 @@
 
     #logoCentro {
       position: absolute;
-      width: 64px;
-      height: 64px;
-      left: 86px;
-      top: 86px;
+      width: 164px;
+      height: 164px;
+      left: 36px;
+      top: 36px;
       object-fit: contain;
       background: white;
-      padding: 6px;
-      border-radius: 8px;
+      padding: 5px;
+      border-radius: 12px;
       box-sizing: border-box;
       display: none;
       z-index: 10;
@@ -248,17 +244,17 @@
         TAMANO_QR
       );
 
-      /*
-        Espacio blanco detrás del logo
-      */
-
       const centroX =
         canvas.width / 2;
 
       const centroY =
         canvas.height / 2;
 
-      const fondoLogo = 78;
+      /*
+        Fondo blanco del logo
+      */
+
+      const fondoLogo = 174;
 
       ctx.fillStyle = "#ffffff";
 
@@ -278,7 +274,7 @@
         logo.naturalWidth > 0
       ) {
 
-        const tamanoLogo = 64;
+        const tamanoLogo = 164;
 
         ctx.drawImage(
           logo,
