@@ -47,6 +47,10 @@
       color: white;
     }
 
+    button:hover {
+      opacity: 0.85;
+    }
+
     #zonaQR {
       position: relative;
       width: 236px;
@@ -63,14 +67,15 @@
       position: absolute;
       width: 46px;
       height: 46px;
-      left: 95px;
-      top: 95px;
+      left: 90px;
+      top: 90px;
       object-fit: contain;
       background: white;
-      padding: 5px;
-      border-radius: 7px;
+      padding: 7px;
+      border-radius: 8px;
       box-sizing: content-box;
       display: none;
+      z-index: 10;
     }
 
     #descargar {
@@ -110,8 +115,8 @@
 
     <img
       id="logoCentro"
-      src="logo-mascotas.png"
-      alt="Huellitas QR"
+      src="logo%20qr.png"
+      alt="Logo Huellitas QR"
     >
 
   </div>
@@ -122,15 +127,19 @@
 
   <div id="enlace"></div>
 
-
   <script>
 
     const TAMANO_QR = 236;
 
+    const LOGO_MASCOTAS =
+      "logo%20qr.png";
+
+
     function generarQR() {
 
       const id =
-        document.getElementById("idMascota")
+        document
+        .getElementById("idMascota")
         .value
         .trim()
         .toUpperCase();
@@ -178,7 +187,8 @@
     function descargarQR() {
 
       const id =
-        document.getElementById("idMascota")
+        document
+        .getElementById("idMascota")
         .value
         .trim()
         .toUpperCase();
@@ -220,7 +230,7 @@
         canvas.height
       );
 
-      // QR
+      // Dibujar QR
       ctx.drawImage(
         qrCanvas,
         margen,
@@ -232,15 +242,34 @@
       const logo =
         document.getElementById("logoCentro");
 
-      // Si el logo está cargado, colocarlo
+
+      function terminarDescarga() {
+
+        const enlace =
+          document.createElement("a");
+
+        enlace.download =
+          id + "_QR_20mm.png";
+
+        enlace.href =
+          canvas.toDataURL("image/png");
+
+        document.body.appendChild(enlace);
+
+        enlace.click();
+
+        document.body.removeChild(enlace);
+      }
+
+
+      // Si el logo está cargado, incluirlo
       if (
         logo.complete &&
         logo.naturalWidth > 0
       ) {
 
         const logoSize = 46;
-
-        const fondo = 58;
+        const fondo = 60;
 
         const centroX =
           canvas.width / 2;
@@ -248,7 +277,7 @@
         const centroY =
           canvas.height / 2;
 
-        // Fondo blanco
+        // Área blanca detrás del logo
         ctx.fillStyle = "#ffffff";
 
         ctx.fillRect(
@@ -266,23 +295,15 @@
           logoSize,
           logoSize
         );
+
+        terminarDescarga();
+
+      } else {
+
+        // Si el logo no carga,
+        // el QR se descarga igualmente
+        terminarDescarga();
       }
-
-      // Descargar siempre el QR
-      const enlace =
-        document.createElement("a");
-
-      enlace.download =
-        id + "_QR_20mm.png";
-
-      enlace.href =
-        canvas.toDataURL("image/png");
-
-      document.body.appendChild(enlace);
-
-      enlace.click();
-
-      document.body.removeChild(enlace);
     }
 
   </script>
