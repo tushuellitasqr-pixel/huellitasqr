@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>HuellaQR</title>
 
   <style>
+
     body {
       margin: 0;
       padding: 20px;
@@ -16,7 +18,7 @@
 
     .contenedor {
       max-width: 500px;
-      margin: 0 auto;
+      margin: auto;
       background: white;
       padding: 25px;
       border-radius: 20px;
@@ -96,7 +98,9 @@
       color: #c62828;
       font-weight: bold;
     }
+
   </style>
+
 </head>
 
 <body>
@@ -118,34 +122,11 @@ const API_MASCOTAS =
 
 function obtenerID() {
 
-  const parametros = new URLSearchParams(window.location.search);
+  const parametros =
+    new URLSearchParams(window.location.search);
 
   return parametros.get("id");
-}
 
-
-function convertirImagen(url) {
-
-  if (!url) return "";
-
-  url = String(url).trim();
-
-  /*
-    Si es un enlace de Google Drive,
-    intenta obtener el ID del archivo.
-  */
-
-  let coincidencia = url.match(/[-\w]{25,}/);
-
-  if (coincidencia) {
-
-    return "https://drive.google.com/thumbnail?id=" +
-           coincidencia[0] +
-           "&sz=w1000";
-
-  }
-
-  return url;
 }
 
 
@@ -166,6 +147,106 @@ function obtenerValor(objeto, nombres) {
   }
 
   return "";
+
+}
+
+
+function convertirImagen(url) {
+
+  if (!url) return "";
+
+  url = String(url).trim();
+
+  const coincidencia =
+    url.match(/[-\w]{25,}/);
+
+  if (coincidencia) {
+
+    return "https://drive.google.com/thumbnail?id=" +
+      coincidencia[0] +
+      "&sz=w1000";
+
+  }
+
+  return url;
+
+}
+
+
+/* Convertir fecha de Google Sheets */
+
+function convertirFecha(fecha) {
+
+  if (!fecha) return "";
+
+  const numero =
+    Number(fecha);
+
+  if (!isNaN(numero) && numero > 30000) {
+
+    const fechaBase =
+      new Date(1899, 11, 30);
+
+    fechaBase.setDate(
+      fechaBase.getDate() + Math.floor(numero)
+    );
+
+    const dia =
+      String(fechaBase.getDate()).padStart(2, "0");
+
+    const mes =
+      String(fechaBase.getMonth() + 1).padStart(2, "0");
+
+    const año =
+      fechaBase.getFullYear();
+
+    return `${dia}/${mes}/${año}`;
+
+  }
+
+  return fecha;
+
+}
+
+
+/* Convertir WhatsApp */
+
+function convertirWhatsApp(numero) {
+
+  if (!numero) return "";
+
+  let limpio =
+    String(numero).replace(/\D/g, "");
+
+  /*
+    Si el número tiene 9 dígitos,
+    asumimos que es un número celular de Ecuador
+    y agregamos 593.
+  */
+
+  if (limpio.length === 9) {
+
+    limpio = "593" + limpio;
+
+  }
+
+  /*
+    Si empieza con 0 y tiene 10 dígitos,
+    quitamos el 0 y agregamos 593.
+  */
+
+  if (
+    limpio.length === 10 &&
+    limpio.startsWith("0")
+  ) {
+
+    limpio =
+      "593" + limpio.substring(1);
+
+  }
+
+  return limpio;
+
 }
 
 
@@ -181,12 +262,15 @@ async function cargarMascota() {
   if (!id) {
 
     contenido.innerHTML = `
+
       <p class="error">
         No se indicó el código de la mascota.
       </p>
+
     `;
 
     return;
+
   }
 
 
@@ -215,44 +299,40 @@ async function cargarMascota() {
       resultado;
 
 
-    if (!Array.isArray(mascotas)) {
-
-      throw new Error(
-        "La respuesta de PasteSheet no tiene el formato esperado."
-      );
-
-    }
-
-
     const animal =
       mascotas.find(
+
         mascota =>
+
           String(
             obtenerValor(
               mascota,
               ["ID", "Id", "id"]
             )
           ).trim() ===
+
           String(id).trim()
+
       );
 
 
     if (!animal) {
 
       contenido.innerHTML = `
+
         <p class="error">
           No se encontró una mascota con el código:
           ${id}
         </p>
+
       `;
 
       return;
+
     }
 
 
-    /*
-      DATOS DE LA MASCOTA
-    */
+    /* DATOS */
 
     const nombre =
       obtenerValor(
@@ -271,11 +351,7 @@ async function cargarMascota() {
     const sexo =
       obtenerValor(
         animal,
-        [
-          "Sexo",
-          "SEXO",
-          "sexo"
-        ]
+        ["Sexo", "SEXO", "sexo"]
       );
 
 
@@ -362,13 +438,18 @@ async function cargarMascota() {
       ) || "ACTIVO";
 
 
-    /*
-      CONSTRUCCIÓN DEL PERFIL
-    */
+    /* PERFIL */
 
-    let html = `
+    let html = "";
 
-      <h1>🐾 ${nombre}</h1>
+
+    /* NOMBRE */
+
+    html += `
+
+      <h1>
+        🐾 ${nombre}
+      </h1>
 
       <div class="estado">
         ${estado}
@@ -377,9 +458,7 @@ async function cargarMascota() {
     `;
 
 
-    /*
-      FOTO
-    */
+    /* FOTO */
 
     if (foto) {
 
@@ -396,17 +475,20 @@ async function cargarMascota() {
     }
 
 
-    /*
-      ESPECIE
-    */
+    /* ESPECIE */
 
     if (especie) {
 
       html += `
 
         <div class="dato">
-          <strong>Especie:</strong>
+
+          <strong>
+            Especie:
+          </strong>
+
           ${especie}
+
         </div>
 
       `;
@@ -414,17 +496,20 @@ async function cargarMascota() {
     }
 
 
-    /*
-      SEXO
-    */
+    /* SEXO */
 
     if (sexo) {
 
       html += `
 
         <div class="dato">
-          <strong>Sexo:</strong>
+
+          <strong>
+            Sexo:
+          </strong>
+
           ${sexo}
+
         </div>
 
       `;
@@ -432,17 +517,20 @@ async function cargarMascota() {
     }
 
 
-    /*
-      CARACTERÍSTICAS
-    */
+    /* CARACTERÍSTICAS */
 
     if (caracteristicas) {
 
       html += `
 
         <div class="dato">
-          <strong>Características:</strong>
+
+          <strong>
+            Características:
+          </strong>
+
           ${caracteristicas}
+
         </div>
 
       `;
@@ -450,17 +538,20 @@ async function cargarMascota() {
     }
 
 
-    /*
-      RESPONSABLE
-    */
+    /* RESPONSABLE */
 
     if (responsable) {
 
       html += `
 
         <div class="dato">
-          <strong>Responsable:</strong>
+
+          <strong>
+            Responsable:
+          </strong>
+
           ${responsable}
+
         </div>
 
       `;
@@ -468,17 +559,20 @@ async function cargarMascota() {
     }
 
 
-    /*
-      FECHA
-    */
+    /* FECHA */
 
     if (fecha) {
 
       html += `
 
         <div class="dato">
-          <strong>Fecha de registro:</strong>
-          ${fecha}
+
+          <strong>
+            Fecha de registro:
+          </strong>
+
+          ${convertirFecha(fecha)}
+
         </div>
 
       `;
@@ -486,23 +580,24 @@ async function cargarMascota() {
     }
 
 
-    /*
-      ID
-    */
+    /* ID */
 
     html += `
 
       <div class="dato">
-        <strong>ID:</strong>
+
+        <strong>
+          ID:
+        </strong>
+
         ${id}
+
       </div>
 
     `;
 
 
-    /*
-      TELÉFONO
-    */
+    /* TELÉFONO */
 
     if (telefono) {
 
@@ -512,7 +607,9 @@ async function cargarMascota() {
           class="boton telefono"
           href="tel:${telefono}"
         >
+
           📞 Llamar
+
         </a>
 
       `;
@@ -520,36 +617,23 @@ async function cargarMascota() {
     }
 
 
-    /*
-      WHATSAPP
-    */
+    /* WHATSAPP */
 
     if (whatsapp) {
 
-      let enlaceWhatsApp =
-        whatsapp;
-
-
-      if (
-        !whatsapp.startsWith("http://") &&
-        !whatsapp.startsWith("https://")
-      ) {
-
-        enlaceWhatsApp =
-          "https://wa.me/" +
-          whatsapp.replace(/\D/g, "");
-
-      }
-
+      let numeroWhatsApp =
+        convertirWhatsApp(whatsapp);
 
       html += `
 
         <a
           class="boton whatsapp"
-          href="${enlaceWhatsApp}"
+          href="https://wa.me/${numeroWhatsApp}"
           target="_blank"
         >
+
           💬 WhatsApp
+
         </a>
 
       `;
@@ -557,9 +641,7 @@ async function cargarMascota() {
     }
 
 
-    /*
-      AUDIO
-    */
+    /* AUDIO */
 
     if (audio) {
 
@@ -577,7 +659,6 @@ async function cargarMascota() {
 
             <source
               src="${audio}"
-              type="audio/mpeg"
             >
 
             Tu navegador no puede reproducir
@@ -600,12 +681,13 @@ async function cargarMascota() {
 
     console.error(error);
 
-
     contenido.innerHTML = `
 
       <p class="error">
+
         No se pudo cargar la información
         de la mascota.
+
       </p>
 
     `;
