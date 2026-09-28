@@ -1,252 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HuellaQR</title>
 
-  <title>HuellaQR</title>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f4f7f8;
+  color: #333;
+}
 
-  <style>
+.contenedor {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.12);
+}
 
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-    }
+h1 {
+  text-align: center;
+  margin: 0 0 8px;
+}
 
-    .contenedor {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-    }
+.estado {
+  text-align: center;
+  color: #198754;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
-    }
+.foto {
+  display: block;
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
 
-    .estado {
-      text-align: center;
-      color: #198754;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
+.dato {
+  background: #f7f7f7;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+}
 
-    .foto {
-      display: block;
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      border-radius: 15px;
-      margin-bottom: 20px;
-    }
+.dato strong {
+  margin-right: 5px;
+}
 
-    .dato {
-      background: #f7f7f7;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 10px;
-    }
+.boton {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  padding: 13px;
+  margin-top: 12px;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
-    .dato strong {
-      display: inline-block;
-      margin-right: 5px;
-    }
+.telefono {
+  background: #0d6efd;
+}
 
-    .boton {
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      color: white;
-      padding: 13px;
-      margin-top: 12px;
-      border-radius: 10px;
-      font-weight: bold;
-    }
+.whatsapp {
+  background: #25D366;
+}
 
-    .telefono {
-      background: #0d6efd;
-    }
+.audio {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f7f7f7;
+  border-radius: 10px;
+  text-align: center;
+}
 
-    .whatsapp {
-      background: #25D366;
-    }
+.audio audio {
+  width: 100%;
+}
 
-    .audio {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f7f7f7;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    audio {
-      width: 100%;
-    }
-
-    .mensaje {
-      text-align: center;
-      padding: 30px 10px;
-    }
-
-    .error {
-      color: #c62828;
-      font-weight: bold;
-    }
-
-  </style>
-
+.error {
+  text-align: center;
+  color: #c62828;
+  font-weight: bold;
+}
+</style>
 </head>
 
 <body>
 
 <div class="contenedor">
-
-  <div id="contenido" class="mensaje">
+  <div id="contenido">
     Cargando información...
   </div>
-
 </div>
-
 
 <script>
 
 const API_MASCOTAS =
-  "https://pastesheet.com/api/rbgtavcc/REGISTROS";
+"https://pastesheet.com/api/rbgtavcc/REGISTROS";
 
 
-function obtenerID() {
-
-  const parametros =
-    new URLSearchParams(window.location.search);
-
-  return parametros.get("id");
-
+function valor(obj, campo) {
+  return obj[campo] ?? "";
 }
 
 
-function obtenerValor(objeto, nombres) {
+function fechaGoogleSheets(valor) {
 
-  for (const nombre of nombres) {
+  if (!valor) return "";
 
-    if (
-      objeto[nombre] !== undefined &&
-      objeto[nombre] !== null &&
-      String(objeto[nombre]).trim() !== ""
-    ) {
-
-      return String(objeto[nombre]).trim();
-
-    }
-
-  }
-
-  return "";
-
-}
-
-
-function convertirImagen(url) {
-
-  if (!url) return "";
-
-  url = String(url).trim();
-
-  const coincidencia =
-    url.match(/[-\w]{25,}/);
-
-  if (coincidencia) {
-
-    return "https://drive.google.com/thumbnail?id=" +
-      coincidencia[0] +
-      "&sz=w1000";
-
-  }
-
-  return url;
-
-}
-
-
-/* Convertir fecha de Google Sheets */
-
-function convertirFecha(fecha) {
-
-  if (!fecha) return "";
-
-  const numero =
-    Number(fecha);
+  const numero = Number(valor);
 
   if (!isNaN(numero) && numero > 30000) {
 
-    const fechaBase =
-      new Date(1899, 11, 30);
-
-    fechaBase.setDate(
-      fechaBase.getDate() + Math.floor(numero)
+    const fecha = new Date(
+      Date.UTC(1899, 11, 30) +
+      numero * 86400000
     );
 
-    const dia =
-      String(fechaBase.getDate()).padStart(2, "0");
+    const dia = String(
+      fecha.getUTCDate()
+    ).padStart(2, "0");
 
-    const mes =
-      String(fechaBase.getMonth() + 1).padStart(2, "0");
+    const mes = String(
+      fecha.getUTCMonth() + 1
+    ).padStart(2, "0");
 
     const año =
-      fechaBase.getFullYear();
+      fecha.getUTCFullYear();
 
     return `${dia}/${mes}/${año}`;
-
   }
 
-  return fecha;
-
+  return valor;
 }
 
 
-/* Convertir WhatsApp */
+function imagenDrive(url) {
 
-function convertirWhatsApp(numero) {
+  if (!url) return "";
+
+  const encontrado =
+    String(url).match(/[-\w]{25,}/);
+
+  if (encontrado) {
+
+    return "https://drive.google.com/thumbnail?id=" +
+      encontrado[0] +
+      "&sz=w1000";
+  }
+
+  return url;
+}
+
+
+function whatsappLink(numero) {
 
   if (!numero) return "";
 
-  let limpio =
+  let n =
     String(numero).replace(/\D/g, "");
 
-  /*
-    Si el número tiene 9 dígitos,
-    asumimos que es un número celular de Ecuador
-    y agregamos 593.
-  */
-
-  if (limpio.length === 9) {
-
-    limpio = "593" + limpio;
-
+  if (n.startsWith("0")) {
+    n = "593" + n.substring(1);
   }
 
-  /*
-    Si empieza con 0 y tiene 10 dígitos,
-    quitamos el 0 y agregamos 593.
-  */
-
-  if (
-    limpio.length === 10 &&
-    limpio.startsWith("0")
-  ) {
-
-    limpio =
-      "593" + limpio.substring(1);
-
+  else if (n.length === 9) {
+    n = "593" + n;
   }
 
-  return limpio;
-
+  return "https://wa.me/" + n;
 }
 
 
@@ -255,22 +186,23 @@ async function cargarMascota() {
   const contenido =
     document.getElementById("contenido");
 
+  const parametros =
+    new URLSearchParams(
+      window.location.search
+    );
+
   const id =
-    obtenerID();
+    parametros.get("id");
 
 
   if (!id) {
 
-    contenido.innerHTML = `
-
-      <p class="error">
-        No se indicó el código de la mascota.
-      </p>
-
-    `;
+    contenido.innerHTML =
+    `<p class="error">
+      No se indicó el código de la mascota.
+    </p>`;
 
     return;
-
   }
 
 
@@ -280,165 +212,85 @@ async function cargarMascota() {
       await fetch(API_MASCOTAS);
 
 
-    if (!respuesta.ok) {
-
-      throw new Error(
-        "No se pudo conectar con PasteSheet"
-      );
-
-    }
-
-
-    const resultado =
+    const datos =
       await respuesta.json();
 
 
     const mascotas =
-      resultado.datos ||
-      resultado.data ||
-      resultado;
+      datos.datos || datos.data || datos;
 
 
     const animal =
       mascotas.find(
-
-        mascota =>
-
-          String(
-            obtenerValor(
-              mascota,
-              ["ID", "Id", "id"]
-            )
-          ).trim() ===
-
-          String(id).trim()
-
+        m =>
+        String(m.ID).trim() ===
+        String(id).trim()
       );
 
 
     if (!animal) {
 
-      contenido.innerHTML = `
-
-        <p class="error">
-          No se encontró una mascota con el código:
-          ${id}
-        </p>
-
-      `;
+      contenido.innerHTML =
+      `<p class="error">
+        No se encontró una mascota con el código:
+        ${id}
+      </p>`;
 
       return;
-
     }
 
 
-    /* DATOS */
+    /*
+    CAMPOS EXACTOS DE REGISTROS
+
+    A ID
+    B Nombre
+    C Especie
+    D Sexo
+    E Características
+    F Foto
+    G Audio
+    H Teléfono
+    I WhatsApp
+    J Responsable
+    K Fecha de registro
+    L Estado
+    */
+
 
     const nombre =
-      obtenerValor(
-        animal,
-        ["Nombre", "nombre"]
-      );
-
+      valor(animal, "Nombre");
 
     const especie =
-      obtenerValor(
-        animal,
-        ["Especie", "especie"]
-      );
-
+      valor(animal, "Especie");
 
     const sexo =
-      obtenerValor(
-        animal,
-        ["Sexo", "SEXO", "sexo"]
-      );
-
+      valor(animal, "Sexo");
 
     const caracteristicas =
-      obtenerValor(
-        animal,
-        [
-          "Características",
-          "Caracteristicas",
-          "características",
-          "caracteristicas"
-        ]
-      );
-
+      valor(animal, "Características");
 
     const foto =
-      obtenerValor(
-        animal,
-        ["Foto", "foto"]
-      );
-
+      valor(animal, "Foto");
 
     const audio =
-      obtenerValor(
-        animal,
-        ["Audio", "audio"]
-      );
-
+      valor(animal, "Audio");
 
     const telefono =
-      obtenerValor(
-        animal,
-        [
-          "Teléfono",
-          "Telefono",
-          "teléfono",
-          "telefono"
-        ]
-      );
-
+      valor(animal, "Teléfono");
 
     const whatsapp =
-      obtenerValor(
-        animal,
-        [
-          "WhatsApp",
-          "Whatsapp",
-          "whatsapp"
-        ]
-      );
-
+      valor(animal, "WhatsApp");
 
     const responsable =
-      obtenerValor(
-        animal,
-        [
-          "Responsable",
-          "responsable"
-        ]
-      );
-
+      valor(animal, "Responsable");
 
     const fecha =
-      obtenerValor(
-        animal,
-        [
-          "Fecha de registro",
-          "Fecha de Registro",
-          "fecha de registro",
-          "Fecha",
-          "fecha",
-          "Marca temporal"
-        ]
-      );
-
+      valor(animal, "Fecha de registro");
 
     const estado =
-      obtenerValor(
-        animal,
-        [
-          "Estado",
-          "estado"
-        ]
-      ) || "ACTIVO";
+      valor(animal, "Estado") || "ACTIVO";
 
-
-    /* PERFIL */
 
     let html = "";
 
@@ -446,15 +298,11 @@ async function cargarMascota() {
     /* NOMBRE */
 
     html += `
-
-      <h1>
-        🐾 ${nombre}
-      </h1>
+      <h1>🐾 ${nombre}</h1>
 
       <div class="estado">
         ${estado}
       </div>
-
     `;
 
 
@@ -463,15 +311,12 @@ async function cargarMascota() {
     if (foto) {
 
       html += `
-
         <img
           class="foto"
-          src="${convertirImagen(foto)}"
+          src="${imagenDrive(foto)}"
           alt="Foto de ${nombre}"
         >
-
       `;
-
     }
 
 
@@ -480,19 +325,11 @@ async function cargarMascota() {
     if (especie) {
 
       html += `
-
         <div class="dato">
-
-          <strong>
-            Especie:
-          </strong>
-
+          <strong>Especie:</strong>
           ${especie}
-
         </div>
-
       `;
-
     }
 
 
@@ -501,19 +338,11 @@ async function cargarMascota() {
     if (sexo) {
 
       html += `
-
         <div class="dato">
-
-          <strong>
-            Sexo:
-          </strong>
-
+          <strong>Sexo:</strong>
           ${sexo}
-
         </div>
-
       `;
-
     }
 
 
@@ -522,19 +351,11 @@ async function cargarMascota() {
     if (caracteristicas) {
 
       html += `
-
         <div class="dato">
-
-          <strong>
-            Características:
-          </strong>
-
+          <strong>Características:</strong>
           ${caracteristicas}
-
         </div>
-
       `;
-
     }
 
 
@@ -543,19 +364,11 @@ async function cargarMascota() {
     if (responsable) {
 
       html += `
-
         <div class="dato">
-
-          <strong>
-            Responsable:
-          </strong>
-
+          <strong>Responsable:</strong>
           ${responsable}
-
         </div>
-
       `;
-
     }
 
 
@@ -564,36 +377,21 @@ async function cargarMascota() {
     if (fecha) {
 
       html += `
-
         <div class="dato">
-
-          <strong>
-            Fecha de registro:
-          </strong>
-
-          ${convertirFecha(fecha)}
-
+          <strong>Fecha de registro:</strong>
+          ${fechaGoogleSheets(fecha)}
         </div>
-
       `;
-
     }
 
 
     /* ID */
 
     html += `
-
       <div class="dato">
-
-        <strong>
-          ID:
-        </strong>
-
+        <strong>ID:</strong>
         ${id}
-
       </div>
-
     `;
 
 
@@ -602,18 +400,13 @@ async function cargarMascota() {
     if (telefono) {
 
       html += `
-
         <a
           class="boton telefono"
           href="tel:${telefono}"
         >
-
           📞 Llamar
-
         </a>
-
       `;
-
     }
 
 
@@ -621,23 +414,15 @@ async function cargarMascota() {
 
     if (whatsapp) {
 
-      let numeroWhatsApp =
-        convertirWhatsApp(whatsapp);
-
       html += `
-
         <a
           class="boton whatsapp"
-          href="https://wa.me/${numeroWhatsApp}"
+          href="${whatsappLink(whatsapp)}"
           target="_blank"
         >
-
           💬 WhatsApp
-
         </a>
-
       `;
-
     }
 
 
@@ -646,54 +431,36 @@ async function cargarMascota() {
     if (audio) {
 
       html += `
-
         <div class="audio">
 
           <strong>
-            🔊 Sonido de ${nombre}
+            🔊 Escuchar sonido
           </strong>
 
           <br><br>
 
           <audio controls>
-
-            <source
-              src="${audio}"
-            >
-
-            Tu navegador no puede reproducir
-            este audio.
-
+            <source src="${audio}">
+            Tu navegador no puede reproducir este audio.
           </audio>
 
         </div>
-
       `;
-
     }
 
 
-    contenido.innerHTML =
-      html;
+    contenido.innerHTML = html;
 
 
   } catch (error) {
 
     console.error(error);
 
-    contenido.innerHTML = `
-
-      <p class="error">
-
-        No se pudo cargar la información
-        de la mascota.
-
-      </p>
-
-    `;
-
+    contenido.innerHTML =
+    `<p class="error">
+      No se pudo cargar la información de la mascota.
+    </p>`;
   }
-
 }
 
 
