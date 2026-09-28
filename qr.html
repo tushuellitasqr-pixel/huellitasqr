@@ -47,15 +47,25 @@
       color: white;
     }
 
-    button:hover {
-      opacity: 0.85;
-    }
-
     #qr {
       margin: 30px auto 20px;
       width: 236px;
       height: 236px;
       position: relative;
+    }
+
+    #qr img.logo-centro {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 5px;
+      border-radius: 8px;
+      box-sizing: content-box;
     }
 
     #descargar {
@@ -101,8 +111,8 @@
 
     const TAMANO_QR = 236;
 
-    // Imagen que subiste al repositorio de GitHub
-    const LOGO_MASCOTAS = "logo-mascotas.png";
+    const LOGO_MASCOTAS =
+      "https://tushuellitasqr-pixel.github.io/huellitasqr/logo-mascotas.png";
 
 
     function generarQR() {
@@ -136,6 +146,25 @@
           correctLevel: QRCode.CorrectLevel.H
         }
       );
+
+      // Esperamos a que QRCode cree el QR
+      setTimeout(function() {
+
+        const logo =
+          document.createElement("img");
+
+        logo.src =
+          LOGO_MASCOTAS;
+
+        logo.className =
+          "logo-centro";
+
+        logo.alt =
+          "Huellitas QR";
+
+        contenedor.appendChild(logo);
+
+      }, 100);
 
       document.getElementById("enlace").innerHTML =
         "<strong>ID:</strong> " + id +
@@ -187,7 +216,7 @@
         canvasFinal.height
       );
 
-      // QR
+      // Dibujar QR
       ctx.drawImage(
         qrCanvas,
         margen,
@@ -196,38 +225,37 @@
         TAMANO_QR
       );
 
-      // Tamaño del logo
-      const logoSize = 48;
-
-      const logoX =
-        (canvasFinal.width - logoSize) / 2;
-
-      const logoY =
-        (canvasFinal.height - logoSize) / 2;
-
-      // Fondo blanco detrás del logo
-      const fondoLogo = 58;
-
-      const fondoX =
-        (canvasFinal.width - fondoLogo) / 2;
-
-      const fondoY =
-        (canvasFinal.height - fondoLogo) / 2;
-
-      ctx.fillStyle = "#ffffff";
-
-      ctx.fillRect(
-        fondoX,
-        fondoY,
-        fondoLogo,
-        fondoLogo
-      );
-
-      // Cargar logo
       const logo =
         new Image();
 
       logo.onload = function() {
+
+        const logoSize = 48;
+
+        const fondoLogo = 60;
+
+        const fondoX =
+          (canvasFinal.width - fondoLogo) / 2;
+
+        const fondoY =
+          (canvasFinal.height - fondoLogo) / 2;
+
+        // Fondo blanco del centro
+        ctx.fillStyle = "#ffffff";
+
+        ctx.fillRect(
+          fondoX,
+          fondoY,
+          fondoLogo,
+          fondoLogo
+        );
+
+        // Logo
+        const logoX =
+          (canvasFinal.width - logoSize) / 2;
+
+        const logoY =
+          (canvasFinal.height - logoSize) / 2;
 
         ctx.drawImage(
           logo,
@@ -252,8 +280,7 @@
       logo.onerror = function() {
 
         alert(
-          "No se pudo cargar logo-mascotas.png. " +
-          "Verifica que el archivo esté en el repositorio de GitHub."
+          "No se encontró la imagen logo-mascotas.png en GitHub."
         );
 
       };
