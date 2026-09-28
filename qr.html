@@ -47,25 +47,30 @@
       color: white;
     }
 
-    #qr {
-      margin: 30px auto 20px;
+    #zonaQR {
+      position: relative;
       width: 236px;
       height: 236px;
-      position: relative;
+      margin: 30px auto 20px;
     }
 
-    #qr img.logo-centro {
+    #qr {
+      width: 236px;
+      height: 236px;
+    }
+
+    #logoCentro {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
+      left: 95px;
+      top: 95px;
       object-fit: contain;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
       background: white;
       padding: 5px;
-      border-radius: 8px;
+      border-radius: 7px;
       box-sizing: content-box;
+      display: none;
     }
 
     #descargar {
@@ -99,7 +104,17 @@
     Generar QR
   </button>
 
-  <div id="qr"></div>
+  <div id="zonaQR">
+
+    <div id="qr"></div>
+
+    <img
+      id="logoCentro"
+      src="logo-mascotas.png"
+      alt="Huellitas QR"
+    >
+
+  </div>
 
   <button id="descargar" onclick="descargarQR()">
     Descargar QR
@@ -107,13 +122,10 @@
 
   <div id="enlace"></div>
 
+
   <script>
 
     const TAMANO_QR = 236;
-
-    const LOGO_MASCOTAS =
-      "https://tushuellitasqr-pixel.github.io/huellitasqr/logo-mascotas.png";
-
 
     function generarQR() {
 
@@ -147,29 +159,16 @@
         }
       );
 
-      // Esperamos a que QRCode cree el QR
-      setTimeout(function() {
+      const logo =
+        document.getElementById("logoCentro");
 
-        const logo =
-          document.createElement("img");
-
-        logo.src =
-          LOGO_MASCOTAS;
-
-        logo.className =
-          "logo-centro";
-
-        logo.alt =
-          "Huellitas QR";
-
-        contenedor.appendChild(logo);
-
-      }, 100);
+      logo.style.display = "block";
 
       document.getElementById("enlace").innerHTML =
         "<strong>ID:</strong> " + id +
         "<br><br>" +
-        "<strong>Enlace:</strong><br>" + enlace;
+        "<strong>Enlace:</strong><br>" +
+        enlace;
 
       document.getElementById("descargar").style.display =
         "inline-block";
@@ -184,6 +183,11 @@
         .trim()
         .toUpperCase();
 
+      if (!id) {
+        alert("Escribe el ID de la mascota");
+        return;
+      }
+
       const qrCanvas =
         document.querySelector("#qr canvas");
 
@@ -192,19 +196,19 @@
         return;
       }
 
-      const canvasFinal =
+      const canvas =
         document.createElement("canvas");
 
       const margen = 20;
 
-      canvasFinal.width =
+      canvas.width =
         TAMANO_QR + margen * 2;
 
-      canvasFinal.height =
+      canvas.height =
         TAMANO_QR + margen * 2;
 
       const ctx =
-        canvasFinal.getContext("2d");
+        canvas.getContext("2d");
 
       // Fondo blanco
       ctx.fillStyle = "#ffffff";
@@ -212,11 +216,11 @@
       ctx.fillRect(
         0,
         0,
-        canvasFinal.width,
-        canvasFinal.height
+        canvas.width,
+        canvas.height
       );
 
-      // Dibujar QR
+      // QR
       ctx.drawImage(
         qrCanvas,
         margen,
@@ -226,67 +230,59 @@
       );
 
       const logo =
-        new Image();
+        document.getElementById("logoCentro");
 
-      logo.onload = function() {
+      // Si el logo está cargado, colocarlo
+      if (
+        logo.complete &&
+        logo.naturalWidth > 0
+      ) {
 
-        const logoSize = 48;
+        const logoSize = 46;
 
-        const fondoLogo = 60;
+        const fondo = 58;
 
-        const fondoX =
-          (canvasFinal.width - fondoLogo) / 2;
+        const centroX =
+          canvas.width / 2;
 
-        const fondoY =
-          (canvasFinal.height - fondoLogo) / 2;
+        const centroY =
+          canvas.height / 2;
 
-        // Fondo blanco del centro
+        // Fondo blanco
         ctx.fillStyle = "#ffffff";
 
         ctx.fillRect(
-          fondoX,
-          fondoY,
-          fondoLogo,
-          fondoLogo
+          centroX - fondo / 2,
+          centroY - fondo / 2,
+          fondo,
+          fondo
         );
 
         // Logo
-        const logoX =
-          (canvasFinal.width - logoSize) / 2;
-
-        const logoY =
-          (canvasFinal.height - logoSize) / 2;
-
         ctx.drawImage(
           logo,
-          logoX,
-          logoY,
+          centroX - logoSize / 2,
+          centroY - logoSize / 2,
           logoSize,
           logoSize
         );
+      }
 
-        const enlace =
-          document.createElement("a");
+      // Descargar siempre el QR
+      const enlace =
+        document.createElement("a");
 
-        enlace.download =
-          id + "_QR_20mm.png";
+      enlace.download =
+        id + "_QR_20mm.png";
 
-        enlace.href =
-          canvasFinal.toDataURL("image/png");
+      enlace.href =
+        canvas.toDataURL("image/png");
 
-        enlace.click();
-      };
+      document.body.appendChild(enlace);
 
-      logo.onerror = function() {
+      enlace.click();
 
-        alert(
-          "No se encontró la imagen logo-mascotas.png en GitHub."
-        );
-
-      };
-
-      logo.src =
-        LOGO_MASCOTAS;
+      document.body.removeChild(enlace);
     }
 
   </script>
