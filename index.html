@@ -3,548 +3,393 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>HuellaQR - Perfil de mascota</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f4f7f8;
       margin: 0;
       padding: 20px;
-      text-align: center;
+      color: #333;
     }
 
-    .tarjeta {
+    .contenedor {
       max-width: 500px;
-      margin: 30px auto;
+      margin: auto;
       background: white;
-      padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-
-    #foto {
-      width: 100%;
-      max-width: 350px;
-      max-height: 350px;
-      object-fit: cover;
-      border-radius: 18px;
-      margin-bottom: 20px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
     }
 
     h1 {
-      margin-bottom: 10px;
-    }
-
-    .dato {
-      margin: 8px 0;
-      font-size: 18px;
-    }
-
-    .etiqueta {
-      font-weight: bold;
+      text-align: center;
+      margin-bottom: 5px;
     }
 
     .estado {
-      display: inline-block;
-      margin: 15px 0;
-      padding: 8px 15px;
-      border-radius: 20px;
-      background: #d4edda;
-      color: #155724;
+      text-align: center;
+      color: #198754;
       font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .foto {
+      width: 100%;
+      max-height: 350px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .dato {
+      margin: 12px 0;
+      padding: 10px;
+      background: #f7f7f7;
+      border-radius: 10px;
+    }
+
+    .dato strong {
+      display: inline-block;
+      min-width: 145px;
     }
 
     .boton {
       display: block;
-      margin: 12px auto;
-      padding: 12px 18px;
-      max-width: 250px;
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
       border-radius: 10px;
       text-decoration: none;
-      color: white;
       font-weight: bold;
-    }
-
-    .telefono {
-      background: #007bff;
     }
 
     .whatsapp {
       background: #25D366;
+      color: white;
+    }
+
+    .telefono {
+      background: #0d6efd;
+      color: white;
     }
 
     .audio {
-      background: #6f42c1;
+      margin-top: 20px;
+      text-align: center;
     }
 
-    .oculto {
-      display: none;
-    }
-
-    #cargando {
-      font-size: 18px;
-      margin-top: 40px;
-    }
-
-    #error {
-      color: #b00020;
+    .error {
+      text-align: center;
+      color: #c62828;
       font-weight: bold;
-      margin-top: 30px;
+    }
+
+    .cargando {
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="tarjeta">
+<div class="contenedor">
 
-    <div id="cargando">
-      Cargando información...
-    </div>
-
-    <div id="contenido" class="oculto">
-
-      <img id="foto" src="" alt="Foto de la mascota">
-
-      <h1 id="nombre"></h1>
-
-      <div class="dato">
-        <span class="etiqueta">Especie:</span>
-        <span id="especie"></span>
-      </div>
-
-      <div class="dato">
-        <span class="etiqueta">Color y características:</span>
-        <span id="color"></span>
-      </div>
-
-      <div class="dato">
-        <span class="etiqueta">Código:</span>
-        <span id="idMascota"></span>
-      </div>
-
-      <div id="estado" class="estado">
-        ACTIVO
-      </div>
-
-      <a id="audio"
-         class="boton audio oculto"
-         href=""
-         target="_blank">
-        🔊 Escuchar sonido
-      </a>
-
-      <a id="telefono"
-         class="boton telefono oculto"
-         href="">
-        📞 Llamar al responsable
-      </a>
-
-      <a id="whatsapp"
-         class="boton whatsapp oculto"
-         href=""
-         target="_blank">
-        💬 WhatsApp
-      </a>
-
-    </div>
-
-    <div id="error" class="oculto"></div>
-
+  <div id="contenido" class="cargando">
+    Cargando información de la mascota...
   </div>
 
+</div>
 
-  <script>
+<script>
 
-    /* =====================================================
-       CONEXIONES
-       ===================================================== */
-
-    // NUEVA BASE DE DATOS DE MASCOTAS
-    const API_MASCOTAS =
-      "https://pastesheet.com/api/rbgtavcc/REGISTROS";
-
-    // ANTIGUA BASE DE DATOS DE CONTACTOS
-    // La mantenemos por ahora para no romper el sistema anterior
-    const API_CONTACTOS =
-      "https://pastesheet.com/api/1prjci1r/CONTACTOS";
+const API_MASCOTAS =
+  "https://pastesheet.com/api/rbgtavcc/REGISTROS";
 
 
-    /* =====================================================
-       CONVERTIR FOTO DE GOOGLE DRIVE
-       ===================================================== */
+function convertirImagen(url) {
 
-    function convertirGoogleDrive(enlace) {
+  if (!url) return "";
 
-      if (!enlace) {
-        return "";
-      }
+  const match = url.match(/[-\w]{25,}/);
 
-      let coincidencia = enlace.match(/\/d\/([^/]+)/);
+  if (match) {
+    return "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w1000";
+  }
 
-      if (!coincidencia) {
-        coincidencia = enlace.match(/[?&]id=([^&]+)/);
-      }
+  return url;
+}
 
-      if (coincidencia) {
 
-        const archivoID = coincidencia[1];
+function obtenerID() {
 
-        return "https://drive.google.com/thumbnail?id="
-          + archivoID
-          + "&sz=w1000";
-      }
+  const parametros = new URLSearchParams(window.location.search);
 
-      return enlace;
+  return parametros.get("id");
+}
+
+
+async function cargarMascota() {
+
+  const id = obtenerID();
+
+  const contenido = document.getElementById("contenido");
+
+  if (!id) {
+
+    contenido.innerHTML =
+      '<p class="error">No se indicó el código de la mascota.</p>';
+
+    return;
+  }
+
+
+  try {
+
+    const respuesta = await fetch(API_MASCOTAS);
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo conectar con la base de datos.");
+    }
+
+    const datos = await respuesta.json();
+
+    const mascotas = datos.datos || datos.data || datos;
+
+    const animal = mascotas.find(
+      mascota => String(mascota.ID).trim() === String(id).trim()
+    );
+
+
+    if (!animal) {
+
+      contenido.innerHTML =
+        '<p class="error">No se encontró una mascota con el código: ' +
+        id +
+        '</p>';
+
+      return;
     }
 
 
-    /* =====================================================
-       OBTENER ID DE LA MASCOTA DESDE LA URL
-       ===================================================== */
+    const nombre =
+      animal.Nombre ||
+      animal.nombre ||
+      "Sin nombre";
 
-    const parametros =
-      new URLSearchParams(window.location.search);
 
-    const id =
-      parametros.get("id");
+    const especie =
+      animal.Especie ||
+      animal.especie ||
+      "No registrada";
 
 
-    /* =====================================================
-       MOSTRAR ERROR
-       ===================================================== */
+    const sexo =
+      animal.Sexo ||
+      animal.sexo ||
+      "No registrado";
 
-    function mostrarError(mensaje) {
 
-      document
-        .getElementById("cargando")
-        .classList.add("oculto");
+    const caracteristicas =
+      animal.Características ||
+      animal.Caracteristicas ||
+      animal.caracteristica ||
+      "No registradas";
 
-      const error =
-        document.getElementById("error");
 
-      error.textContent = mensaje;
+    const foto =
+      animal.Foto ||
+      animal.foto ||
+      "";
 
-      error.classList.remove("oculto");
-    }
 
+    const audio =
+      animal.Audio ||
+      animal.audio ||
+      "";
 
-    /* =====================================================
-       CARGAR MASCOTA
-       ===================================================== */
 
-    async function cargarMascota() {
+    const telefono =
+      animal.Teléfono ||
+      animal.Telefono ||
+      animal.telefono ||
+      "";
 
-      try {
 
-        if (!id) {
+    const whatsapp =
+      animal.WhatsApp ||
+      animal.whatsapp ||
+      "";
 
-          mostrarError(
-            "No se encontró el código de la mascota."
-          );
 
-          return;
-        }
+    const responsable =
+      animal.Responsable ||
+      animal.responsable ||
+      "";
 
 
-        /* ===============================================
-           CONSULTAR LAS BASES DE DATOS
-           =============================================== */
+    const fecha =
+      animal["Fecha de registro"] ||
+      animal.Fecha ||
+      animal.fecha ||
+      "";
 
-        const [respuestaMascotas, respuestaContactos] =
-          await Promise.all([
 
-            fetch(API_MASCOTAS),
+    const estado =
+      animal.Estado ||
+      animal.estado ||
+      "ACTIVO";
 
-            fetch(API_CONTACTOS)
 
-          ]);
+    let html = "";
 
+    html += `
+      <h1>🐾 ${nombre}</h1>
 
-        if (!respuestaMascotas.ok) {
+      <div class="estado">
+        ${estado}
+      </div>
+    `;
 
-          throw new Error(
-            "No se pudo consultar la base de mascotas."
-          );
 
-        }
+    if (foto) {
 
-
-        /* ===============================================
-           CONVERTIR RESPUESTAS A JSON
-           =============================================== */
-
-        const datosMascotas =
-          await respuestaMascotas.json();
-
-
-        let datosContactos = {
-          data: []
-        };
-
-
-        /*
-          El sistema de contactos es antiguo.
-          Si por alguna razón falla, la mascota
-          igualmente puede mostrarse.
-        */
-
-        if (respuestaContactos.ok) {
-
-          try {
-
-            datosContactos =
-              await respuestaContactos.json();
-
-          } catch (error) {
-
-            datosContactos = {
-              data: []
-            };
-
-          }
-
-        }
-
-
-        /* ===============================================
-           OBTENER LISTAS
-           =============================================== */
-
-        const mascotas =
-          datosMascotas.data || [];
-
-        const contactos =
-          datosContactos.data || [];
-
-
-        /* ===============================================
-           BUSCAR ID
-           =============================================== */
-
-        const idBuscado =
-          id.trim().toUpperCase();
-
-
-        const mascota =
-          mascotas.find(animal =>
-
-            String(animal.ID)
-              .trim()
-              .toUpperCase() === idBuscado
-
-          );
-
-
-        /* ===============================================
-           BUSCAR CONTACTO
-           =============================================== */
-
-        const contacto =
-          contactos.find(item =>
-
-            String(item.ID)
-              .trim()
-              .toUpperCase() === idBuscado
-
-          ) || {};
-
-
-        /* ===============================================
-           SI NO EXISTE LA MASCOTA
-           =============================================== */
-
-        if (!mascota) {
-
-          mostrarError(
-            "No se encontró una mascota con el código: "
-            + idBuscado
-          );
-
-          return;
-        }
-
-
-        /* ===============================================
-           NOMBRE
-           =============================================== */
-
-        document
-          .getElementById("nombre")
-          .textContent =
-            mascota["Nombre de la mascota"] || "";
-
-
-        /* ===============================================
-           ESPECIE
-           =============================================== */
-
-        document
-          .getElementById("especie")
-          .textContent =
-            mascota["Especie"] || "";
-
-
-        /* ===============================================
-           COLOR Y CARACTERÍSTICAS
-           =============================================== */
-
-        document
-          .getElementById("color")
-          .textContent =
-            mascota["Color y características"] || "";
-
-
-        /* ===============================================
-           ID
-           =============================================== */
-
-        document
-          .getElementById("idMascota")
-          .textContent =
-            mascota["ID"] || idBuscado;
-
-
-        /* ===============================================
-           FOTO
-           =============================================== */
-
-        if (mascota["Foto de la mascota"]) {
-
-          const foto =
-            convertirGoogleDrive(
-              mascota["Foto de la mascota"]
-            );
-
-          document
-            .getElementById("foto")
-            .src = foto;
-
-        }
-
-
-        /* ===============================================
-           TELÉFONO
-           =============================================== */
-
-        const telefono =
-          mascota["Teléfono de contacto"] ||
-          contacto["TELEFONO"] ||
-          contacto["Phone"] ||
-          contacto["PHONE"];
-
-
-        if (telefono) {
-
-          const botonTelefono =
-            document.getElementById("telefono");
-
-          botonTelefono.href =
-            "tel:" + telefono;
-
-          botonTelefono.classList.remove("oculto");
-
-        }
-
-
-        /* ===============================================
-           WHATSAPP
-           =============================================== */
-
-        const whatsapp =
-          mascota["WhatsApp"] ||
-          contacto["WHATSAPP"] ||
-          contacto["WhatsApp"] ||
-          contacto["WHATSAPP_URL"];
-
-
-        if (whatsapp) {
-
-          const botonWhatsapp =
-            document.getElementById("whatsapp");
-
-
-          /*
-            Si el usuario puso solamente el número,
-            construimos automáticamente el enlace.
-          */
-
-          let enlaceWhatsApp =
-            String(whatsapp).trim();
-
-
-          if (
-            !enlaceWhatsApp.startsWith("http://") &&
-            !enlaceWhatsApp.startsWith("https://")
-          ) {
-
-            enlaceWhatsApp =
-              "https://wa.me/"
-              + enlaceWhatsApp.replace(/\D/g, "");
-
-          }
-
-
-          botonWhatsapp.href =
-            enlaceWhatsApp;
-
-          botonWhatsapp.classList.remove("oculto");
-
-        }
-
-
-        /* ===============================================
-           AUDIO
-           =============================================== */
-
-        if (mascota["Audio"]) {
-
-          const botonAudio =
-            document.getElementById("audio");
-
-          botonAudio.href =
-            mascota["Audio"];
-
-          botonAudio.classList.remove("oculto");
-
-        }
-
-
-        /* ===============================================
-           MOSTRAR PERFIL
-           =============================================== */
-
-        document
-          .getElementById("cargando")
-          .classList.add("oculto");
-
-        document
-          .getElementById("contenido")
-          .classList.remove("oculto");
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        mostrarError(
-          "No se pudo cargar la información de la mascota."
-        );
-
-      }
+      html += `
+        <img
+          class="foto"
+          src="${convertirImagen(foto)}"
+          alt="Foto de ${nombre}"
+        >
+      `;
 
     }
 
 
-    /* =====================================================
-       INICIAR
-       ===================================================== */
+    html += `
+      <div class="dato">
+        <strong>Especie:</strong>
+        ${especie}
+      </div>
 
-    cargarMascota();
+      <div class="dato">
+        <strong>Sexo:</strong>
+        ${sexo}
+      </div>
 
-  </script>
+      <div class="dato">
+        <strong>Características:</strong>
+        ${caracteristicas}
+      </div>
+
+      <div class="dato">
+        <strong>ID:</strong>
+        ${animal.ID}
+      </div>
+    `;
+
+
+    if (responsable) {
+
+      html += `
+        <div class="dato">
+          <strong>Responsable:</strong>
+          ${responsable}
+        </div>
+      `;
+
+    }
+
+
+    if (fecha) {
+
+      html += `
+        <div class="dato">
+          <strong>Fecha de registro:</strong>
+          ${fecha}
+        </div>
+      `;
+
+    }
+
+
+    if (telefono) {
+
+      html += `
+        <a
+          class="boton telefono"
+          href="tel:${telefono}"
+        >
+          📞 Llamar
+        </a>
+      `;
+
+    }
+
+
+    if (whatsapp) {
+
+      let enlaceWhatsApp = whatsapp;
+
+      if (!whatsapp.startsWith("http")) {
+
+        enlaceWhatsApp =
+          "https://wa.me/" +
+          whatsapp.replace(/\D/g, "");
+
+      }
+
+      html += `
+        <a
+          class="boton whatsapp"
+          href="${enlaceWhatsApp}"
+          target="_blank"
+        >
+          💬 WhatsApp
+        </a>
+      `;
+
+    }
+
+
+    if (audio) {
+
+      html += `
+        <div class="audio">
+
+          <p><strong>🔊 Sonido de la mascota</strong></p>
+
+          <audio controls style="width:100%;">
+            <source src="${audio}">
+            Tu navegador no puede reproducir este audio.
+          </audio>
+
+        </div>
+      `;
+
+    }
+
+
+    contenido.innerHTML = html;
+
+  } catch (error) {
+
+    console.error(error);
+
+    contenido.innerHTML = `
+      <p class="error">
+        No se pudo cargar la información de la mascota.
+      </p>
+    `;
+
+  }
+
+}
+
+
+cargarMascota();
+
+</script>
 
 </body>
 </html>
