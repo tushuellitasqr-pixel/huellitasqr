@@ -1,112 +1,118 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Huellitas QR</title>
+  <title>HUELLITAS QR</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
       margin: 0;
       padding: 20px;
-      text-align: center;
+      background: #f5f5f5;
       color: #333;
     }
 
     .contenedor {
       max-width: 500px;
-      margin: auto;
+      margin: 30px auto;
       background: white;
       padding: 25px;
       border-radius: 18px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+      text-align: center;
     }
 
     h1 {
       margin-top: 0;
-      color: #222;
+      color: #333;
     }
 
-    .foto {
+    .logo {
+      font-size: 45px;
+      margin-bottom: 10px;
+    }
+
+    #foto {
       width: 100%;
       max-width: 350px;
       max-height: 350px;
       object-fit: cover;
       border-radius: 15px;
       margin: 15px auto;
-      display: block;
+      display: none;
     }
 
     .dato {
-      margin: 10px 0;
-      font-size: 17px;
       text-align: left;
+      margin: 12px 0;
+      padding: 12px;
+      background: #f7f7f7;
+      border-radius: 10px;
     }
 
     .dato strong {
-      color: #222;
+      display: block;
+      margin-bottom: 5px;
     }
 
-    .estado {
-      display: inline-block;
-      margin: 15px 0;
-      padding: 8px 18px;
-      border-radius: 20px;
-      background: #dff5df;
-      color: #217a21;
-      font-weight: bold;
-    }
-
-    .codigo {
-      font-size: 14px;
-      color: #777;
-      margin-top: 15px;
+    .botones {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .boton {
       display: block;
-      width: 100%;
-      box-sizing: border-box;
-      margin: 10px 0;
       padding: 13px;
       border-radius: 10px;
       text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
       color: white;
-      border: none;
+      font-size: 16px;
       cursor: pointer;
+      border: none;
     }
 
-    .audio {
+    .telefono {
       background: #333;
     }
 
-    .llamar {
-      background: #198754;
+    .whatsapp {
+      background: #25D366;
     }
 
-    .whatsapp {
-      background: #25d366;
+    .audio {
+      background: #6c5ce7;
     }
 
     .oculto {
       display: none !important;
     }
 
-    .cargando {
-      font-size: 18px;
-      margin: 40px 0;
-    }
-
     .error {
       color: #b00020;
       font-weight: bold;
-      margin-top: 30px;
+      line-height: 1.5;
+    }
+
+    .codigo {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    .estado {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #dff5e5;
+      color: #247a3b;
+      font-size: 13px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -115,86 +121,30 @@
 
   <div class="contenedor">
 
-    <h1>🐾 HUELLITAS QR</h1>
+    <div class="logo">🐾</div>
 
-    <div id="cargando" class="cargando">
-      Buscando información de la mascota...
+    <h1>HUELLITAS QR</h1>
+
+    <div id="contenido">
+      Cargando información...
     </div>
-
-    <div id="perfil" class="oculto">
-
-      <img
-        id="foto"
-        class="foto"
-        alt="Foto de la mascota"
-      >
-
-      <h2 id="nombre"></h2>
-
-      <div class="dato">
-        <strong>Especie:</strong>
-        <span id="especie"></span>
-      </div>
-
-      <div class="dato">
-        <strong>Color y características:</strong>
-        <span id="color"></span>
-      </div>
-
-      <div class="dato">
-        <strong>Responsable:</strong>
-        <span id="responsable"></span>
-      </div>
-
-      <div class="dato">
-        <strong>Fecha de registro:</strong>
-        <span id="fecha"></span>
-      </div>
-
-      <div id="estado" class="estado"></div>
-
-      <div class="codigo">
-        Código de identificación:
-        <strong id="codigo"></strong>
-      </div>
-
-      <a
-        id="audio"
-        class="boton audio oculto"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        🔊 Escuchar sonido
-      </a>
-
-      <a
-        id="telefono"
-        class="boton llamar oculto"
-      >
-        📞 Llamar
-      </a>
-
-      <a
-        id="whatsapp"
-        class="boton whatsapp oculto"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        💬 WhatsApp
-      </a>
-
-    </div>
-
-    <div id="error" class="error oculto"></div>
 
   </div>
 
 
   <script>
 
-    const API_MASCOTAS =
-      "https://pastesheet.com/api/rbgtavcc/REGISTROS";
+    /* =====================================================
+       CONEXIÓN CON PASTESHEET
+       ===================================================== */
 
+    const API_MASCOTAS =
+      "https://pastesheet.com/api/rbgtavcc";
+
+
+    /* =====================================================
+       CONVERTIR ENLACES DE GOOGLE DRIVE
+       ===================================================== */
 
     function convertirGoogleDrive(url) {
 
@@ -202,125 +152,141 @@
         return "";
       }
 
-      if (url.includes("drive.google.com")) {
+      url = url.trim();
 
-        let id = "";
+      const coincidencia =
+        url.match(/[?&]id=([^&]+)/);
 
-        const matchOpen =
-          url.match(/[?&]id=([^&]+)/);
+      if (coincidencia) {
 
-        if (matchOpen) {
-          id = matchOpen[1];
-        }
+        return "https://drive.google.com/thumbnail?id="
+          + coincidencia[1]
+          + "&sz=w1000";
 
-        if (!id) {
+      }
 
-          const matchFile =
-            url.match(/\/file\/d\/([^/]+)/);
+      const coincidencia2 =
+        url.match(/\/d\/([^/]+)/);
 
-          if (matchFile) {
-            id = matchFile[1];
-          }
-        }
+      if (coincidencia2) {
 
-        if (id) {
+        return "https://drive.google.com/thumbnail?id="
+          + coincidencia2[1]
+          + "&sz=w1000";
 
-          return "https://drive.google.com/thumbnail?id="
-            + id
-            + "&sz=w1000";
-        }
       }
 
       return url;
     }
 
 
-    function formatearFecha(fecha) {
+    /* =====================================================
+       FORMATEAR FECHA
+       ===================================================== */
 
-      if (!fecha) {
+    function formatearFecha(valor) {
+
+      if (!valor) {
         return "";
       }
 
+      const texto = String(valor).trim();
+
       /*
-        Fecha DD/MM/YYYY
+       Formato DD/MM/YYYY
       */
 
       if (
-        typeof fecha === "string" &&
-        /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)
+        /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(texto)
       ) {
 
-        return fecha;
+        return texto;
+
       }
 
 
       /*
-        Fecha ISO
+       Fecha ISO
       */
 
-      if (
-        typeof fecha === "string" &&
-        fecha.includes("-")
-      ) {
+      if (texto.includes("-")) {
 
-        const fechaISO =
-          new Date(fecha);
+        const fecha =
+          new Date(texto);
 
-        if (!isNaN(fechaISO.getTime())) {
+        if (!isNaN(fecha.getTime())) {
 
-          return fechaISO.toLocaleDateString("es-EC");
+          return fecha.toLocaleDateString(
+            "es-EC"
+          );
+
         }
+
       }
 
 
       /*
-        Fecha serial de Google Sheets
+       Fecha serial de Google Sheets
       */
 
       const numero =
-        Number(fecha);
+        Number(texto);
 
-      if (!isNaN(numero) && numero > 30000) {
+      if (!isNaN(numero)) {
 
-        const fechaSheets =
-          new Date(
-            Date.UTC(1899, 11, 30)
-            + numero * 86400000
-          );
+        const fechaBase =
+          new Date(Date.UTC(1899, 11, 30));
 
-        return fechaSheets.toLocaleDateString("es-EC");
+        fechaBase.setUTCDate(
+          fechaBase.getUTCDate()
+          + Math.floor(numero)
+        );
+
+        return fechaBase.toLocaleDateString(
+          "es-EC",
+          {
+            timeZone: "UTC"
+          }
+        );
+
       }
 
-
-      return fecha;
+      return texto;
     }
 
 
+    /* =====================================================
+       OBTENER ID DE LA URL
+       ===================================================== */
+
+    const parametros =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const idBuscado =
+      (parametros.get("id") || "")
+      .trim()
+      .toUpperCase();
+
+
+    /* =====================================================
+       CARGAR MASCOTA
+       ===================================================== */
+
     async function cargarMascota() {
 
-      const parametros =
-        new URLSearchParams(
-          window.location.search
-        );
-
-      const idBuscado =
-        parametros
-        .get("id")
-        ?.trim()
-        .toUpperCase();
+      const contenido =
+        document.getElementById("contenido");
 
 
       if (!idBuscado) {
 
-        document.getElementById("cargando")
-          .classList.add("oculto");
-
-        document.getElementById("error")
-          .textContent =
-          "No se indicó el código de la mascota.";
-
-        document.getElementById("error")
-          .classList.remove("oculto");
+        contenido.innerHTML = `
+          <p class="error">
+            No se indicó el código de la mascota.
+          </p>
+        `;
 
         return;
       }
@@ -328,21 +294,11 @@
 
       try {
 
-        /*
-          Se agrega una marca de tiempo
-          para evitar utilizar una respuesta
-          anterior almacenada en caché.
-        */
-
-        const urlAPI =
-          API_MASCOTAS
-          + "?_="
-          + Date.now();
-
-
         const respuesta =
           await fetch(
-            urlAPI,
+            API_MASCOTAS
+            + "?_="
+            + Date.now(),
             {
               cache: "no-store"
             }
@@ -350,9 +306,11 @@
 
 
         if (!respuesta.ok) {
+
           throw new Error(
-            "No se pudo consultar la base de datos."
+            "No se pudo conectar con la base de datos."
           );
+
         }
 
 
@@ -360,12 +318,12 @@
           await respuesta.json();
 
 
-        const lista =
+        const mascotas =
           datosMascotas.data || [];
 
 
         const mascota =
-          lista.find(
+          mascotas.find(
             animal =>
               String(animal.ID || "")
               .trim()
@@ -374,219 +332,302 @@
           );
 
 
-        document.getElementById("cargando")
-          .classList.add("oculto");
-
-
         if (!mascota) {
 
-          document.getElementById("error")
-            .textContent =
-            "No se encontró una mascota con el código "
-            + idBuscado;
-
-          document.getElementById("error")
-            .classList.remove("oculto");
+          contenido.innerHTML = `
+            <p class="error">
+              No se encontró una mascota
+              con el código ${idBuscado}
+            </p>
+          `;
 
           return;
         }
 
 
-        /*
-          FOTO
-        */
+        /* =================================================
+           DATOS DE LA MASCOTA
+           ================================================= */
+
+        const nombre =
+          mascota["Nombre de la mascota"] || "";
+
+        const especie =
+          mascota["Especie"] || "";
+
+        const color =
+          mascota["Color y características"] || "";
+
+        const responsable =
+          mascota["Nombre del responsable"] || "";
+
+        const telefono =
+          mascota["Teléfono de contacto"] || "";
+
+        const whatsapp =
+          mascota["WhatsApp"] || "";
 
         const foto =
-          convertirGoogleDrive(
-            mascota["Foto de la mascota"]
-          );
+          mascota["Foto de la mascota"] || "";
 
+        const audio =
+          mascota["Audio"] || "";
+
+        const fecha =
+          mascota["Fecha de registro"] || "";
+
+        const estado =
+          mascota["Estado"] || "";
+
+
+        /* =================================================
+           MOSTRAR FOTO
+           ================================================= */
+
+        let fotoHTML = "";
 
         if (foto) {
 
-          const imagen =
-            document.getElementById("foto");
+          const fotoConvertida =
+            convertirGoogleDrive(foto);
 
-          imagen.src = foto;
-
-          imagen.classList.remove("oculto");
-
-        } else {
-
-          document.getElementById("foto")
-            .classList.add("oculto");
-        }
-
-
-        /*
-          DATOS
-        */
-
-        document.getElementById("nombre")
-          .textContent =
-          mascota["Nombre de la mascota"] || "";
-
-
-        document.getElementById("especie")
-          .textContent =
-          mascota["Especie"] || "";
-
-
-        document.getElementById("color")
-          .textContent =
-          mascota["Color y características"] || "";
-
-
-        document.getElementById("responsable")
-          .textContent =
-          mascota["Nombre del responsable"] || "";
-
-
-        document.getElementById("fecha")
-          .textContent =
-          formatearFecha(
-            mascota["Fecha de registro"]
-          );
-
-
-        document.getElementById("codigo")
-          .textContent =
-          mascota["ID"] || idBuscado;
-
-
-        /*
-          ESTADO
-        */
-
-        document.getElementById("estado")
-          .textContent =
-          mascota["Estado"] || "ACTIVO";
-
-
-        /*
-          AUDIO
-        */
-
-        if (mascota["Audio"]) {
-
-          const botonAudio =
-            document.getElementById("audio");
-
-          botonAudio.href =
-            mascota["Audio"];
-
-          botonAudio.classList.remove("oculto");
+          fotoHTML = `
+            <img
+              id="foto"
+              src="${fotoConvertida}"
+              alt="Foto de ${nombre}"
+              style="display:block;"
+            >
+          `;
 
         }
 
 
-        /*
-          TELÉFONO
-        */
+        /* =================================================
+           RESPONSABLE
+           ================================================= */
 
-        if (mascota["Teléfono de contacto"]) {
+        let responsableHTML = "";
 
-          const telefono =
-            String(
-              mascota["Teléfono de contacto"]
-            )
+        if (responsable) {
+
+          responsableHTML = `
+            <div class="dato">
+              <strong>Responsable</strong>
+              ${responsable}
+            </div>
+          `;
+
+        }
+
+
+        /* =================================================
+           FECHA
+           ================================================= */
+
+        let fechaHTML = "";
+
+        if (fecha) {
+
+          fechaHTML = `
+            <div class="dato">
+              <strong>Fecha de registro</strong>
+              ${formatearFecha(fecha)}
+            </div>
+          `;
+
+        }
+
+
+        /* =================================================
+           ESTADO
+           ================================================= */
+
+        let estadoHTML = "";
+
+        if (estado) {
+
+          estadoHTML = `
+            <span class="estado">
+              ${estado}
+            </span>
+          `;
+
+        }
+
+
+        /* =================================================
+           BOTÓN TELÉFONO
+           ================================================= */
+
+        let telefonoHTML = "";
+
+        if (telefono) {
+
+          telefonoHTML = `
+            <a
+              class="boton telefono"
+              href="tel:${telefono}"
+            >
+              📞 Llamar
+            </a>
+          `;
+
+        }
+
+
+        /* =================================================
+           BOTÓN WHATSAPP
+           ================================================= */
+
+        let whatsappHTML = "";
+
+        if (whatsapp) {
+
+          let numeroWhatsApp =
+            String(whatsapp)
             .replace(/\D/g, "");
 
 
-          if (telefono) {
+          /*
+           Si el número ecuatoriano empieza
+           con 0, se reemplaza por 593
+          */
 
-            const botonTelefono =
-              document.getElementById("telefono");
+          if (
+            numeroWhatsApp.startsWith("0")
+          ) {
 
-            botonTelefono.href =
-              "tel:" + telefono;
+            numeroWhatsApp =
+              "593"
+              + numeroWhatsApp.substring(1);
 
-            botonTelefono.classList.remove("oculto");
           }
-        }
 
 
-        /*
-          WHATSAPP
-        */
+          /*
+           Si tiene 9 dígitos y empieza
+           por 9, agregamos 593
+          */
 
-        if (mascota["WhatsApp"]) {
+          if (
+            numeroWhatsApp.length === 9
+            &&
+            numeroWhatsApp.startsWith("9")
+          ) {
 
-          const whatsapp =
-            String(
-              mascota["WhatsApp"]
-            )
-            .replace(/\D/g, "");
-
-
-          if (whatsapp) {
-
-            const botonWhatsapp =
-              document.getElementById("whatsapp");
-
-
-            /*
-              Si el número ecuatoriano
-              comienza con 0, se cambia
-              al código internacional 593.
-            */
-
-            let numeroWhatsApp =
-              whatsapp;
-
-
-            if (
-              numeroWhatsApp.startsWith("0")
-            ) {
-
-              numeroWhatsApp =
-                "593"
-                + numeroWhatsApp.substring(1);
-            }
-
-
-            botonWhatsapp.href =
-              "https://wa.me/"
+            numeroWhatsApp =
+              "593"
               + numeroWhatsApp;
 
-
-            botonWhatsapp.classList.remove("oculto");
           }
+
+
+          whatsappHTML = `
+            <a
+              class="boton whatsapp"
+              href="https://wa.me/${numeroWhatsApp}"
+              target="_blank"
+            >
+              💬 WhatsApp
+            </a>
+          `;
+
         }
 
 
-        /*
-          MOSTRAR PERFIL
-        */
+        /* =================================================
+           BOTÓN AUDIO
+           ================================================= */
 
-        document.getElementById("perfil")
-          .classList.remove("oculto");
+        let audioHTML = "";
+
+        if (audio) {
+
+          audioHTML = `
+            <a
+              class="boton audio"
+              href="${audio}"
+              target="_blank"
+            >
+              🔊 Escuchar audio
+            </a>
+          `;
+
+        }
 
 
-      } catch (error) {
+        /* =================================================
+           MOSTRAR TODO
+           ================================================= */
+
+        contenido.innerHTML = `
+
+          ${fotoHTML}
+
+          <div class="dato">
+            <strong>Nombre</strong>
+            ${nombre}
+          </div>
+
+          <div class="dato">
+            <strong>Especie</strong>
+            ${especie}
+          </div>
+
+          <div class="dato">
+            <strong>Color y características</strong>
+            ${color}
+          </div>
+
+          ${responsableHTML}
+
+          ${fechaHTML}
+
+          ${estadoHTML}
+
+          <div class="botones">
+
+            ${audioHTML}
+
+            ${telefonoHTML}
+
+            ${whatsappHTML}
+
+          </div>
+
+          <div class="codigo">
+            Código: ${idBuscado}
+          </div>
+
+        `;
+
+      }
+
+
+      catch (error) {
 
         console.error(error);
 
+        contenido.innerHTML = `
+          <p class="error">
+            No se pudo cargar la información
+            de la mascota.
+          </p>
+        `;
 
-        document.getElementById("cargando")
-          .classList.add("oculto");
-
-
-        document.getElementById("error")
-          .textContent =
-          "No fue posible cargar la información de la mascota. Intenta nuevamente.";
-
-        document.getElementById("error")
-          .classList.remove("oculto");
       }
 
     }
 
+
+    /* =====================================================
+       INICIAR
+       ===================================================== */
 
     cargarMascota();
 
   </script>
 
 </body>
-
 </html>
