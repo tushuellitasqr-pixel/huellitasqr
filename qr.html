@@ -61,14 +61,14 @@
 
     #logoCentro {
       position: absolute;
-      width: 164px;
-      height: 164px;
-      left: 36px;
-      top: 36px;
+      width: 66px;
+      height: 66px;
+      left: 85px;
+      top: 85px;
       object-fit: contain;
       background: white;
-      padding: 5px;
-      border-radius: 12px;
+      padding: 3px;
+      border-radius: 8px;
       box-sizing: border-box;
       display: none;
       z-index: 10;
@@ -244,17 +244,17 @@
         TAMANO_QR
       );
 
+
       const centroX =
         canvas.width / 2;
 
       const centroY =
         canvas.height / 2;
 
-      /*
-        Fondo blanco del logo
-      */
 
-      const fondoLogo = 174;
+      /* Tamaño reducido del fondo blanco */
+
+      const fondoLogo = 76;
 
       ctx.fillStyle = "#ffffff";
 
@@ -265,16 +265,15 @@
         fondoLogo
       );
 
-      /*
-        Logo central
-      */
+
+      /* Tamaño reducido del logo */
 
       if (
         logo.complete &&
         logo.naturalWidth > 0
       ) {
 
-        const tamanoLogo = 164;
+        const tamanoLogo = 66;
 
         ctx.drawImage(
           logo,
@@ -285,9 +284,6 @@
         );
       }
 
-      /*
-        Descargar
-      */
 
       const enlace =
         document.createElement("a");
