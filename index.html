@@ -27,29 +27,6 @@
     }
 
     /* =========================
-       BANNER
-    ========================= */
-
-    .banner {
-      width: 100%;
-      height: 150px;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      line-height: 0;
-    }
-
-    .banner img {
-      width: 100%;
-      height: 150px;
-      display: block;
-      object-fit: fill;
-      object-position: center;
-    }
-
-    /* =========================
        CONTENIDO
     ========================= */
 
@@ -57,7 +34,7 @@
       width: 100%;
       max-width: 620px;
       margin: 0 auto;
-      padding: 18px 18px 40px;
+      padding: 30px 18px 40px;
     }
 
     .encabezado {
@@ -266,18 +243,8 @@
 
     @media (max-width: 480px) {
 
-      .banner {
-        height: 105px;
-      }
-
-      .banner img {
-        width: 100%;
-        height: 105px;
-        object-fit: fill;
-      }
-
       .pagina {
-        padding: 18px 14px 35px;
+        padding: 22px 14px 35px;
       }
 
       .titulo {
@@ -302,20 +269,6 @@
 </head>
 
 <body>
-
-  <!-- =========================
-       BANNER
-  ========================= -->
-
-  <div class="banner">
-
-    <img
-      src="https://tushuellitasqr-pixel.github.io/huellitasqr/banner.jpg"
-      alt="Huellitas QR"
-    >
-
-  </div>
-
 
   <!-- =========================
        CONTENIDO
@@ -487,25 +440,87 @@
       "https://pastesheet.com/api/rbgtavcc";
 
 
+    /* =========================
+       CONVERTIR ENLACE DE DRIVE
+       A IMAGEN VISIBLE
+    ========================= */
+
     function convertirGoogleDrive(url) {
 
       if (!url) {
         return "";
       }
 
-      const coincidencia =
-        url.match(/[?&]id=([^&]+)/);
+      const texto =
+        String(url).trim();
 
-      if (coincidencia) {
 
-        return "https://drive.google.com/uc?export=view&id="
-          + coincidencia[1];
+      /*
+        Si ya es una imagen directa,
+        la dejamos igual.
+      */
+
+      if (
+        texto.includes("googleusercontent.com") ||
+        texto.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)
+      ) {
+
+        return texto;
 
       }
 
-      return url;
+
+      /*
+        Extraer ID de:
+        https://drive.google.com/open?id=XXXX
+      */
+
+      let coincidencia =
+        texto.match(/[?&]id=([^&]+)/);
+
+
+      /*
+        También aceptar:
+        https://drive.google.com/file/d/XXXX/view
+      */
+
+      if (!coincidencia) {
+
+        coincidencia =
+          texto.match(
+            /drive\.google\.com\/file\/d\/([^/]+)/
+          );
+
+      }
+
+
+      if (coincidencia) {
+
+        const id =
+          coincidencia[1];
+
+        /*
+          Thumbnail de Google Drive.
+          Esta forma funciona mejor para
+          mostrar imágenes en una página web.
+        */
+
+        return (
+          "https://drive.google.com/thumbnail?id=" +
+          encodeURIComponent(id) +
+          "&sz=w1200"
+        );
+
+      }
+
+
+      return texto;
     }
 
+
+    /* =========================
+       FECHA
+    ========================= */
 
     function formatearFecha(valor) {
 
@@ -524,7 +539,8 @@
           );
 
         fecha.setUTCDate(
-          fecha.getUTCDate() + Math.floor(numero)
+          fecha.getUTCDate() +
+          Math.floor(numero)
         );
 
         return fecha.toLocaleDateString(
@@ -535,11 +551,16 @@
             year: "numeric"
           }
         );
+
       }
 
       return valor;
     }
 
+
+    /* =========================
+       OBTENER ID
+    ========================= */
 
     function obtenerID() {
 
@@ -557,10 +578,15 @@
     }
 
 
+    /* =========================
+       CARGAR MASCOTA
+    ========================= */
+
     async function cargarMascota() {
 
       const id =
         obtenerID();
+
 
       if (!id) {
 
@@ -624,50 +650,70 @@
            DATOS PRINCIPALES
         ========================= */
 
-        document.getElementById("nombre").textContent =
-          animal["Nombre de la mascota"] || "Sin nombre";
+        document.getElementById(
+          "nombre"
+        ).textContent =
+          animal["Nombre de la mascota"] ||
+          "Sin nombre";
 
 
-        document.getElementById("especie").textContent =
-          animal["Especie"] || "Sin especificar";
+        document.getElementById(
+          "especie"
+        ).textContent =
+          animal["Especie"] ||
+          "Sin especificar";
 
 
-        document.getElementById("color").textContent =
+        document.getElementById(
+          "color"
+        ).textContent =
           animal["Color y características"] ||
           "Sin información";
 
 
-        document.getElementById("codigo").textContent =
-          animal["ID"] || id;
+        document.getElementById(
+          "codigo"
+        ).textContent =
+          animal["ID"] ||
+          id;
 
 
         /* =========================
            FOTO
         ========================= */
 
+        const fotoOriginal =
+          animal["Foto de la mascota"];
+
+
         const foto =
           convertirGoogleDrive(
-            animal["Foto de la mascota"]
+            fotoOriginal
           );
+
+
+        const imagen =
+          document.getElementById("foto");
 
 
         if (foto) {
 
-          const imagen =
-            document.getElementById("foto");
+          imagen.src =
+            foto;
 
-          imagen.src = foto;
+          imagen.style.display =
+            "block";
 
-          imagen.onerror = function() {
-            console.error(
-              "No se pudo cargar la foto:",
-              foto
+          imagen.alt =
+            "Foto de " +
+            (
+              animal["Nombre de la mascota"] ||
+              "la mascota"
             );
-          };
 
         } else {
 
-          document.getElementById("foto").style.display =
+          imagen.style.display =
             "none";
 
         }
@@ -724,7 +770,8 @@
         ========================= */
 
         const estado =
-          animal["Estado"] || "ACTIVO";
+          animal["Estado"] ||
+          "ACTIVO";
 
 
         document.getElementById(
@@ -749,7 +796,9 @@
             "block";
 
           window.audioMascota =
-            convertirGoogleDrive(audio);
+            convertirGoogleDrive(
+              audio
+            );
 
         }
 
@@ -769,8 +818,11 @@
               "botonTelefono"
             );
 
+
           botonTelefono.href =
-            "tel:" + telefono;
+            "tel:" +
+            telefono;
+
 
           botonTelefono.style.display =
             "block";
@@ -825,6 +877,10 @@
     }
 
 
+    /* =========================
+       REPRODUCIR AUDIO
+    ========================= */
+
     function reproducirAudio() {
 
       const audio =
@@ -843,13 +899,23 @@
       reproductor.play()
         .catch(
           error => {
+
             console.error(error);
-            window.open(audio, "_blank");
+
+            window.open(
+              audio,
+              "_blank"
+            );
+
           }
         );
 
     }
 
+
+    /* =========================
+       INICIAR
+    ========================= */
 
     cargarMascota();
 
