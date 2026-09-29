@@ -7,131 +7,402 @@
   <title>HUELLITAS QR</title>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f5f5f5;
-      color: #333;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f6;
+      color: #263238;
     }
 
-    .contenedor {
-      max-width: 500px;
-      margin: 30px auto;
+    /* =========================
+       BANNER
+    ========================= */
+
+    .banner {
+      width: 100%;
       background: white;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    .banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+
+    /* =========================
+       CONTENEDOR PRINCIPAL
+    ========================= */
+
+    .pagina {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 18px 45px;
+    }
+
+
+    /* =========================
+       ENCABEZADO
+    ========================= */
+
+    .encabezado {
       text-align: center;
+      margin-bottom: 22px;
     }
 
-    h1 {
-      margin-top: 0;
-      color: #333;
+    .huella {
+      font-size: 30px;
+      margin-bottom: 5px;
     }
 
-    .logo {
-      font-size: 45px;
-      margin-bottom: 10px;
+    .titulo {
+      margin: 0;
+      font-size: 27px;
+      font-weight: 800;
+      color: #263238;
+    }
+
+    .subtitulo {
+      margin: 7px 0 0;
+      font-size: 14px;
+      color: #718096;
+    }
+
+
+    /* =========================
+       TARJETA PRINCIPAL
+    ========================= */
+
+    .tarjeta {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 8px 28px rgba(38, 50, 56, 0.09);
+    }
+
+
+    /* =========================
+       FOTO
+    ========================= */
+
+    .foto-contenedor {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
     }
 
     #foto {
       width: 100%;
-      max-width: 350px;
-      max-height: 350px;
+      max-width: 390px;
+      height: 330px;
       object-fit: cover;
-      border-radius: 15px;
-      margin: 15px auto;
+      border-radius: 20px;
       display: block;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
+    }
+
+
+    /* =========================
+       NOMBRE DE LA MASCOTA
+    ========================= */
+
+    .nombre-mascota {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .nombre-mascota h2 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+      color: #263238;
+      text-transform: capitalize;
+    }
+
+    .especie {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 7px 15px;
+      border-radius: 30px;
+      background: #eef7f3;
+      color: #26735a;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+
+    /* =========================
+       ESTADO
+    ========================= */
+
+    .estado-contenedor {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .estado {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 30px;
+      background: #e7f7ed;
+      color: #28794a;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .punto {
+      width: 8px;
+      height: 8px;
+      background: #35a866;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+
+    /* =========================
+       DATOS
+    ========================= */
+
+    .datos {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
     }
 
     .dato {
+      background: #f7f9f8;
+      border: 1px solid #edf1ef;
+      border-radius: 15px;
+      padding: 15px 16px;
       text-align: left;
-      margin: 12px 0;
-      padding: 12px;
-      background: #f7f7f7;
-      border-radius: 10px;
     }
 
-    .dato strong {
+    .dato-etiqueta {
       display: block;
+      font-size: 12px;
+      font-weight: bold;
+      color: #7a8784;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
       margin-bottom: 5px;
     }
 
+    .dato-valor {
+      display: block;
+      font-size: 16px;
+      color: #263238;
+      line-height: 1.4;
+    }
+
+
+    /* =========================
+       BOTONES
+    ========================= */
+
     .botones {
-      margin-top: 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-top: 22px;
     }
 
     .boton {
-      display: block;
-      padding: 13px;
-      border-radius: 10px;
+      width: 100%;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 18px;
+      border-radius: 14px;
       text-decoration: none;
-      color: white;
       font-size: 16px;
-      cursor: pointer;
+      font-weight: bold;
+      color: white;
       border: none;
+      transition: transform 0.15s ease;
+    }
+
+    .boton:active {
+      transform: scale(0.98);
     }
 
     .telefono {
-      background: #333;
+      background: #37474f;
     }
 
     .whatsapp {
-      background: #25D366;
+      background: #25d366;
     }
 
     .audio {
       background: #6c5ce7;
     }
 
-    .error {
-      color: #b00020;
-      font-weight: bold;
+
+    /* =========================
+       CÓDIGO
+    ========================= */
+
+    .codigo {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: #929c99;
+      letter-spacing: 0.5px;
+    }
+
+
+    /* =========================
+       PIE DE PÁGINA
+    ========================= */
+
+    .pie {
+      text-align: center;
+      margin-top: 25px;
+      color: #899390;
+      font-size: 12px;
       line-height: 1.5;
     }
 
-    .codigo {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #777;
+    .pie strong {
+      color: #52605c;
     }
 
-    .estado {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 6px 12px;
+
+    /* =========================
+       ERROR
+    ========================= */
+
+    .error {
+      background: white;
       border-radius: 20px;
-      background: #dff5e5;
-      color: #247a3b;
-      font-size: 13px;
+      padding: 28px 20px;
+      text-align: center;
+      color: #b00020;
       font-weight: bold;
+      line-height: 1.6;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
     }
+
+
+    /* =========================
+       CARGANDO
+    ========================= */
+
+    .cargando {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+    }
+
+
+    /* =========================
+       CELULARES PEQUEÑOS
+    ========================= */
+
+    @media (max-width: 480px) {
+
+      .pagina {
+        padding: 26px 12px 35px;
+      }
+
+      .tarjeta {
+        padding: 16px;
+        border-radius: 20px;
+      }
+
+      #foto {
+        height: 290px;
+        border-radius: 17px;
+      }
+
+      .nombre-mascota h2 {
+        font-size: 28px;
+      }
+
+      .dato {
+        padding: 13px 14px;
+      }
+
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <div class="contenedor">
 
-    <div class="logo">🐾</div>
+  <!-- =========================
+       BANNER DE HUELLITAS QR
+  ========================== -->
 
-    <h1>HUELLITAS QR</h1>
+  <div class="banner">
 
-    <div id="contenido">
-      Cargando información...
-    </div>
+    <img
+      src="https://tushuellitasqr-pixel.github.io/huellitasqr/banner.jpg"
+      alt="Huellitas QR"
+    >
 
   </div>
 
+
+  <!-- =========================
+       CONTENIDO
+  ========================== -->
+
+  <main class="pagina">
+
+    <div id="contenido">
+
+      <div class="cargando">
+        🐾<br><br>
+        Cargando información...
+      </div>
+
+    </div>
+
+
+    <div class="pie">
+
+      <strong>HUELLITAS QR</strong><br>
+
+      Identificación que ayuda a mantener
+      a las mascotas cerca de quienes las quieren.
+
+    </div>
+
+  </main>
+
+
+
 <script>
+
+
+/* =========================
+   API DE MASCOTAS
+========================= */
 
 const API_MASCOTAS =
   "https://pastesheet.com/api/rbgtavcc";
 
+
+
+/* =========================
+   CONVERTIR FOTO DE DRIVE
+========================= */
 
 function convertirGoogleDrive(url) {
 
@@ -139,29 +410,42 @@ function convertirGoogleDrive(url) {
 
   url = String(url).trim();
 
+
   const coincidencia =
     url.match(/[?&]id=([^&]+)/);
+
 
   if (coincidencia) {
 
     return "https://drive.google.com/thumbnail?id="
       + coincidencia[1]
       + "&sz=w1000";
+
   }
+
 
   const coincidencia2 =
     url.match(/\/d\/([^/]+)/);
+
 
   if (coincidencia2) {
 
     return "https://drive.google.com/thumbnail?id="
       + coincidencia2[1]
       + "&sz=w1000";
+
   }
 
+
   return url;
+
 }
 
+
+
+/* =========================
+   FORMATEAR FECHA
+========================= */
 
 function formatearFecha(valor) {
 
@@ -170,36 +454,46 @@ function formatearFecha(valor) {
   const texto =
     String(valor).trim();
 
+
   if (
     /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(texto)
   ) {
 
     return texto;
+
   }
+
 
   if (texto.includes("-")) {
 
     const fecha =
       new Date(texto);
 
+
     if (!isNaN(fecha.getTime())) {
 
       return fecha.toLocaleDateString("es-EC");
+
     }
+
   }
+
 
   const numero =
     Number(texto);
+
 
   if (!isNaN(numero)) {
 
     const fechaBase =
       new Date(Date.UTC(1899, 11, 30));
 
+
     fechaBase.setUTCDate(
       fechaBase.getUTCDate()
       + Math.floor(numero)
     );
+
 
     return fechaBase.toLocaleDateString(
       "es-EC",
@@ -207,16 +501,25 @@ function formatearFecha(valor) {
         timeZone: "UTC"
       }
     );
+
   }
 
+
   return texto;
+
 }
 
+
+
+/* =========================
+   OBTENER ID
+========================= */
 
 const parametros =
   new URLSearchParams(
     window.location.search
   );
+
 
 const idBuscado =
   (parametros.get("id") || "")
@@ -224,7 +527,13 @@ const idBuscado =
   .toUpperCase();
 
 
+
+/* =========================
+   CARGAR MASCOTA
+========================= */
+
 async function cargarMascota() {
+
 
   const contenido =
     document.getElementById("contenido");
@@ -233,22 +542,33 @@ async function cargarMascota() {
   if (!idBuscado) {
 
     contenido.innerHTML = `
-      <p class="error">
-        No se indicó el código de la mascota.
-      </p>
+
+      <div class="error">
+
+        No se indicó el código
+        de la mascota.
+
+      </div>
+
     `;
 
     return;
+
   }
+
 
 
   try {
 
+
     const respuesta =
-      await fetch(API_MASCOTAS, {
-        method: "GET",
-        cache: "no-store"
-      });
+      await fetch(
+        API_MASCOTAS,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
 
 
     if (!respuesta.ok) {
@@ -256,26 +576,34 @@ async function cargarMascota() {
       throw new Error(
         "HTTP " + respuesta.status
       );
+
     }
+
 
 
     const texto =
       await respuesta.text();
 
 
+
     let datosMascotas;
+
 
     try {
 
       datosMascotas =
         JSON.parse(texto);
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       throw new Error(
         "La respuesta de PasteSheet no es JSON válido."
       );
+
     }
+
 
 
     if (
@@ -286,153 +614,308 @@ async function cargarMascota() {
       throw new Error(
         "La respuesta no contiene la estructura data."
       );
+
     }
+
 
 
     const mascotas =
       datosMascotas.data;
 
 
+
     const mascota =
-      mascotas.find(function(animal) {
+      mascotas.find(
+        function(animal) {
 
-        const id =
-          String(
-            animal.ID || ""
-          )
-          .trim()
-          .toUpperCase();
 
-        return id === idBuscado;
+          const id =
+            String(
+              animal.ID || ""
+            )
+            .trim()
+            .toUpperCase();
 
-      });
+
+          return id === idBuscado;
+
+        }
+      );
+
 
 
     if (!mascota) {
 
       contenido.innerHTML = `
-        <p class="error">
+
+        <div class="error">
+
           No se encontró una mascota
           con el código ${idBuscado}.
-        </p>
+
+        </div>
+
       `;
 
       return;
+
     }
 
+
+
+    /* =========================
+       DATOS
+    ========================= */
 
     const nombre =
       mascota["Nombre de la mascota"] || "";
 
+
     const especie =
       mascota["Especie"] || "";
+
 
     const color =
       mascota["Color y características"] || "";
 
+
     const responsable =
       mascota["Nombre del responsable"] || "";
+
 
     const telefono =
       mascota["Teléfono de contacto"] || "";
 
+
     const whatsapp =
       mascota["WhatsApp"] || "";
+
 
     const foto =
       mascota["Foto de la mascota"] || "";
 
+
     const audio =
       mascota["Audio"] || "";
 
+
     const fecha =
       mascota["Fecha de registro"] || "";
+
 
     const estado =
       mascota["Estado"] || "";
 
 
+
+    /* =========================
+       FOTO
+    ========================= */
+
     let fotoHTML = "";
+
 
     if (foto) {
 
       fotoHTML = `
-        <img
-          id="foto"
-          src="${convertirGoogleDrive(foto)}"
-          alt="Foto de ${nombre}"
-        >
-      `;
-    }
 
+        <div class="foto-contenedor">
 
-    let responsableHTML = "";
+          <img
+            id="foto"
+            src="${convertirGoogleDrive(foto)}"
+            alt="Foto de ${nombre}"
+          >
 
-    if (responsable) {
-
-      responsableHTML = `
-        <div class="dato">
-          <strong>Responsable</strong>
-          ${responsable}
         </div>
+
       `;
+
     }
 
 
-    let fechaHTML = "";
 
-    if (fecha) {
+    /* =========================
+       ESPECIE
+    ========================= */
 
-      fechaHTML = `
-        <div class="dato">
-          <strong>Fecha de registro</strong>
-          ${formatearFecha(fecha)}
-        </div>
+    let especieHTML = "";
+
+
+    if (especie) {
+
+      especieHTML = `
+
+        <span class="especie">
+          ${especie}
+        </span>
+
       `;
+
     }
 
+
+
+    /* =========================
+       ESTADO
+    ========================= */
 
     let estadoHTML = "";
+
 
     if (estado) {
 
       estadoHTML = `
-        <span class="estado">
-          ${estado}
-        </span>
+
+        <div class="estado-contenedor">
+
+          <span class="estado">
+
+            <span class="punto"></span>
+
+            ${estado}
+
+          </span>
+
+        </div>
+
       `;
+
     }
 
 
+
+    /* =========================
+       DATOS
+    ========================= */
+
+    let colorHTML = "";
+
+
+    if (color) {
+
+      colorHTML = `
+
+        <div class="dato">
+
+          <span class="dato-etiqueta">
+            Características
+          </span>
+
+          <span class="dato-valor">
+            ${color}
+          </span>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    let responsableHTML = "";
+
+
+    if (responsable) {
+
+      responsableHTML = `
+
+        <div class="dato">
+
+          <span class="dato-etiqueta">
+            Responsable
+          </span>
+
+          <span class="dato-valor">
+            ${responsable}
+          </span>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    let fechaHTML = "";
+
+
+    if (fecha) {
+
+      fechaHTML = `
+
+        <div class="dato">
+
+          <span class="dato-etiqueta">
+            Fecha de registro
+          </span>
+
+          <span class="dato-valor">
+            ${formatearFecha(fecha)}
+          </span>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    /* =========================
+       TELÉFONO
+    ========================= */
+
     let telefonoHTML = "";
+
 
     if (telefono) {
 
       telefonoHTML = `
+
         <a
           class="boton telefono"
           href="tel:${telefono}"
         >
-          📞 Llamar
+
+          📞
+          <span>
+            Llamar
+          </span>
+
         </a>
+
       `;
+
     }
 
 
+
+    /* =========================
+       WHATSAPP
+    ========================= */
+
     let whatsappHTML = "";
 
+
     if (whatsapp) {
+
 
       let numero =
         String(whatsapp)
         .replace(/\D/g, "");
 
 
+
       if (numero.startsWith("0")) {
 
         numero =
           "593" + numero.substring(1);
+
       }
+
 
 
       if (
@@ -442,75 +925,143 @@ async function cargarMascota() {
 
         numero =
           "593" + numero;
+
       }
 
 
+
       whatsappHTML = `
+
         <a
           class="boton whatsapp"
           href="https://wa.me/${numero}"
           target="_blank"
         >
-          💬 WhatsApp
+
+          💬
+          <span>
+            WhatsApp
+          </span>
+
         </a>
+
       `;
+
     }
 
 
+
+    /* =========================
+       AUDIO
+    ========================= */
+
     let audioHTML = "";
+
 
     if (audio) {
 
       audioHTML = `
+
         <a
           class="boton audio"
           href="${audio}"
           target="_blank"
         >
-          🔊 Escuchar audio
+
+          🔊
+          <span>
+            Escuchar audio
+          </span>
+
         </a>
+
       `;
+
     }
 
 
+
+    /* =========================
+       MOSTRAR PERFIL
+    ========================= */
+
     contenido.innerHTML = `
 
-      ${fotoHTML}
 
-      <div class="dato">
-        <strong>Nombre</strong>
-        ${nombre}
-      </div>
+      <div class="encabezado">
 
-      <div class="dato">
-        <strong>Especie</strong>
-        ${especie}
-      </div>
+        <div class="huella">
+          🐾
+        </div>
 
-      <div class="dato">
-        <strong>Color y características</strong>
-        ${color}
-      </div>
+        <h1 class="titulo">
+          Perfil de mascota
+        </h1>
 
-      ${responsableHTML}
-
-      ${fechaHTML}
-
-      ${estadoHTML}
-
-      <div class="botones">
-
-        ${audioHTML}
-
-        ${telefonoHTML}
-
-        ${whatsappHTML}
+        <p class="subtitulo">
+          Información de identificación
+        </p>
 
       </div>
 
-      <div class="codigo">
-        Código: ${idBuscado}
-      </div>
+
+
+      <section class="tarjeta">
+
+
+        ${fotoHTML}
+
+
+
+        <div class="nombre-mascota">
+
+          <h2>
+            ${nombre}
+          </h2>
+
+          ${especieHTML}
+
+        </div>
+
+
+
+        ${estadoHTML}
+
+
+
+        <div class="datos">
+
+          ${colorHTML}
+
+          ${responsableHTML}
+
+          ${fechaHTML}
+
+        </div>
+
+
+
+        <div class="botones">
+
+          ${audioHTML}
+
+          ${telefonoHTML}
+
+          ${whatsappHTML}
+
+        </div>
+
+
+
+        <div class="codigo">
+
+          Código de identificación:
+          <strong>${idBuscado}</strong>
+
+        </div>
+
+
+      </section>
 
     `;
 
@@ -519,6 +1070,7 @@ async function cargarMascota() {
 
   catch (error) {
 
+
     console.error(
       "Error HUELLITAS QR:",
       error
@@ -526,14 +1078,20 @@ async function cargarMascota() {
 
 
     contenido.innerHTML = `
-      <p class="error">
-        No se pudo conectar con la base de datos.
-      </p>
 
-      <p>
-        El código ${idBuscado} sí existe,
-        pero la página no pudo leer PasteSheet.
-      </p>
+      <div class="error">
+
+        No se pudo conectar
+        con la base de datos.
+
+        <br><br>
+
+        El código ${idBuscado}
+        sí existe, pero la página
+        no pudo leer PasteSheet.
+
+      </div>
+
     `;
 
   }
@@ -541,9 +1099,15 @@ async function cargarMascota() {
 }
 
 
+
+/* =========================
+   INICIAR
+========================= */
+
 cargarMascota();
 
 </script>
+
 
 </body>
 </html>
