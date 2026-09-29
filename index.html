@@ -23,23 +23,20 @@
 
     /* =========================
        BANNER
-       ANCHO COMPLETO
-       ALTO REDUCIDO
+       IMAGEN COMPLETA
+       SIN RECORTE
     ========================= */
 
     .banner {
       width: 100%;
-      height: 33.33vw;
-      max-height: 180px;
       background: white;
       overflow: hidden;
+      line-height: 0;
     }
 
     .banner img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+      height: auto;
       display: block;
     }
 
@@ -320,11 +317,6 @@
     ========================= */
 
     @media (max-width: 480px) {
-
-      .banner {
-        height: 33.33vw;
-        max-height: 120px;
-      }
 
       .pagina {
         padding: 26px 12px 35px;
@@ -798,7 +790,7 @@ async function cargarMascota() {
 
 
     /* =========================
-       DATOS
+       CARACTERÍSTICAS
     ========================= */
 
     let colorHTML = "";
@@ -826,6 +818,10 @@ async function cargarMascota() {
 
 
 
+    /* =========================
+       RESPONSABLE
+    ========================= */
+
     let responsableHTML = "";
 
 
@@ -850,6 +846,10 @@ async function cargarMascota() {
     }
 
 
+
+    /* =========================
+       FECHA
+    ========================= */
 
     let fechaHTML = "";
 
@@ -893,6 +893,7 @@ async function cargarMascota() {
         >
 
           📞
+
           <span>
             Llamar
           </span>
@@ -951,6 +952,7 @@ async function cargarMascota() {
         >
 
           💬
+
           <span>
             WhatsApp
           </span>
@@ -981,6 +983,7 @@ async function cargarMascota() {
         >
 
           🔊
+
           <span>
             Escuchar audio
           </span>
@@ -999,7 +1002,6 @@ async function cargarMascota() {
 
     contenido.innerHTML = `
 
-
       <div class="encabezado">
 
         <div class="huella">
@@ -1017,12 +1019,10 @@ async function cargarMascota() {
       </div>
 
 
-
       <section class="tarjeta">
 
 
         ${fotoHTML}
-
 
 
         <div class="nombre-mascota">
@@ -1036,9 +1036,7 @@ async function cargarMascota() {
         </div>
 
 
-
         ${estadoHTML}
-
 
 
         <div class="datos">
@@ -1052,7 +1050,6 @@ async function cargarMascota() {
         </div>
 
 
-
         <div class="botones">
 
           ${audioHTML}
@@ -1062,7 +1059,6 @@ async function cargarMascota() {
           ${whatsappHTML}
 
         </div>
-
 
 
         <div class="codigo">
