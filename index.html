@@ -478,6 +478,10 @@
       "https://pastesheet.com/api/rbgtavcc";
 
 
+    /* =========================
+       CONVERTIR FOTO DE GOOGLE DRIVE
+    ========================= */
+
     function convertirGoogleDrive(url) {
 
       if (!url) {
@@ -492,6 +496,30 @@
         return "https://drive.google.com/thumbnail?id="
           + coincidencia[1]
           + "&sz=w1200";
+
+      }
+
+      return url;
+    }
+
+
+    /* =========================
+       CONVERTIR AUDIO DE GOOGLE DRIVE
+    ========================= */
+
+    function convertirAudioGoogleDrive(url) {
+
+      if (!url) {
+        return "";
+      }
+
+      const coincidencia =
+        url.match(/[?&]id=([^&]+)/);
+
+      if (coincidencia) {
+
+        return "https://drive.google.com/uc?export=download&id="
+          + coincidencia[1];
 
       }
 
@@ -732,7 +760,7 @@
             "block";
 
           window.audioMascota =
-            convertirGoogleDrive(audio);
+            convertirAudioGoogleDrive(audio);
 
         }
 
@@ -820,14 +848,24 @@
 
 
       const reproductor =
-        new Audio(audio);
+        new Audio();
+
+
+      reproductor.src =
+        audio;
 
 
       reproductor.play()
         .catch(
           error => {
+
             console.error(error);
-            window.open(audio, "_blank");
+
+            window.open(
+              audio,
+              "_blank"
+            );
+
           }
         );
 
