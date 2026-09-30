@@ -98,6 +98,19 @@
       opacity: 0.85;
     }
 
+    #reproductorAudio {
+      display: none;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    #iframeAudio {
+      width: 100%;
+      height: 100px;
+      border: none;
+      border-radius: 10px;
+    }
+
     #codigo {
       margin-top: 22px;
       font-weight: bold;
@@ -118,6 +131,7 @@
     }
 
     @media (max-width: 600px) {
+
       .pagina {
         margin: 15px auto;
       }
@@ -133,102 +147,200 @@
       .campo span {
         font-size: 16px;
       }
+
+      #iframeAudio {
+        height: 100px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- BANNER -->
+  <!-- =========================
+       BANNER
+       ========================= -->
+
   <div class="banner">
+
     <img
       src="https://tushuellitasqr-pixel.github.io/huellitasqr/banner.jpg"
       alt="Huellitas QR"
     >
+
   </div>
+
 
   <div class="pagina">
 
     <div class="tarjeta">
 
-      <!-- FOTO -->
-      <img id="foto" src="" alt="Foto de la mascota">
 
-      <!-- INFORMACIÓN -->
+      <!-- =========================
+           FOTO
+           ========================= -->
+
+      <img
+        id="foto"
+        src=""
+        alt="Foto de la mascota"
+      >
+
+
+      <!-- =========================
+           INFORMACIÓN
+           ========================= -->
+
       <div class="campo">
+
         <strong>Nombre</strong>
+
         <span id="nombre"></span>
+
       </div>
 
+
       <div class="campo">
+
         <strong>Especie</strong>
+
         <span id="especie"></span>
+
       </div>
+
 
       <div class="campo">
+
         <strong>Color y características</strong>
+
         <span id="color"></span>
+
       </div>
 
-      <div class="campo" id="campoResponsable">
+
+      <div
+        class="campo"
+        id="campoResponsable"
+      >
+
         <strong>Responsable</strong>
+
         <span id="responsable"></span>
+
       </div>
 
-      <div class="campo" id="campoFecha">
+
+      <div
+        class="campo"
+        id="campoFecha"
+      >
+
         <strong>Fecha de registro</strong>
+
         <span id="fecha"></span>
+
       </div>
 
-      <!-- BOTONES -->
+
+      <!-- =========================
+           BOTONES
+           ========================= -->
+
       <div class="botones">
 
-        <button id="btnAudio" onclick="reproducirAudio()">
+
+        <button
+          id="btnAudio"
+          onclick="reproducirAudio()"
+        >
           🔊 Escuchar sonido
         </button>
 
-        <button id="btnTelefono" onclick="llamar()">
+
+        <button
+          id="btnTelefono"
+          onclick="llamar()"
+        >
           📞 Llamar
         </button>
 
-        <button id="btnWhatsApp" onclick="whatsapp()">
+
+        <button
+          id="btnWhatsApp"
+          onclick="whatsapp()"
+        >
           💬 WhatsApp
         </button>
 
+
       </div>
 
-      <!-- ID -->
+
+      <!-- =========================
+           REPRODUCTOR DE AUDIO
+           ========================= -->
+
+      <div id="reproductorAudio">
+
+        <iframe
+          id="iframeAudio"
+          allow="autoplay"
+          title="Reproductor de audio">
+        </iframe>
+
+      </div>
+
+
+      <!-- =========================
+           ID
+           ========================= -->
+
       <div id="codigo"></div>
 
-      <!-- ESTADO -->
+
+      <!-- =========================
+           ESTADO
+           ========================= -->
+
       <div id="estado"></div>
+
 
       <footer>
         Huellitas QR
       </footer>
 
+
     </div>
 
   </div>
 
+
   <script>
-
-    const API = "https://pastesheet.com/api/rbgtavcc";
-
-    let mascotaActual = null;
-    let audioMascota = null;
-    let reproductorAudio = null;
 
 
     /* =========================
-       CONVERTIR FOTO DE GOOGLE DRIVE
+       API
+       ========================= */
+
+    const API =
+      "https://pastesheet.com/api/rbgtavcc";
+
+
+    let mascotaActual = null;
+
+    let audioMascota = null;
+
+
+    /* =========================
+       CONVERTIR FOTO GOOGLE DRIVE
        ========================= */
 
     function convertirGoogleDrive(url) {
 
       if (!url) return "";
 
-      const coincidencia = url.match(/[?&]id=([^&]+)/);
+      const coincidencia =
+        url.match(/[?&]id=([^&]+)/);
 
       if (coincidencia) {
 
@@ -243,19 +355,21 @@
 
 
     /* =========================
-       CONVERTIR AUDIO DE GOOGLE DRIVE
+       CONVERTIR AUDIO GOOGLE DRIVE
        ========================= */
 
     function convertirAudioGoogleDrive(url) {
 
       if (!url) return "";
 
-      const coincidencia = url.match(/[?&]id=([^&]+)/);
+      const coincidencia =
+        url.match(/[?&]id=([^&]+)/);
 
       if (coincidencia) {
 
-        return "https://drive.google.com/uc?export=media&id="
-          + coincidencia[1];
+        return "https://drive.google.com/file/d/"
+          + coincidencia[1]
+          + "/preview";
 
       }
 
@@ -277,7 +391,9 @@
 
         const fecha = new Date(
           Math.round(
-            (numero - 25569) * 86400 * 1000
+            (numero - 25569)
+            * 86400
+            * 1000
           )
         );
 
@@ -294,9 +410,10 @@
 
     function obtenerID() {
 
-      const parametros = new URLSearchParams(
-        window.location.search
-      );
+      const parametros =
+        new URLSearchParams(
+          window.location.search
+        );
 
       return parametros.get("id");
     }
@@ -310,6 +427,7 @@
 
       const id = obtenerID();
 
+
       if (!id) {
 
         document.getElementById("nombre").textContent =
@@ -318,19 +436,31 @@
         return;
       }
 
+
       try {
 
-        const respuesta = await fetch(API);
+        const respuesta =
+          await fetch(API);
+
 
         if (!respuesta.ok) {
-          throw new Error("No se pudo conectar con la base de datos.");
+
+          throw new Error(
+            "No se pudo conectar con la base de datos."
+          );
+
         }
 
-        const datos = await respuesta.json();
 
-        const mascota = datos.data.find(
-          item => item.ID === id
-        );
+        const datos =
+          await respuesta.json();
+
+
+        const mascota =
+          datos.data.find(
+            item => item.ID === id
+          );
+
 
         if (!mascota) {
 
@@ -340,36 +470,51 @@
           return;
         }
 
+
         mascotaActual = mascota;
 
-        /* FOTO */
 
-        const foto = convertirGoogleDrive(
-          mascota["Foto de la mascota"]
-        );
+        /* =========================
+           FOTO
+           ========================= */
 
-        document.getElementById("foto").src = foto;
+        const foto =
+          convertirGoogleDrive(
+            mascota["Foto de la mascota"]
+          );
 
 
-        /* NOMBRE */
+        document.getElementById("foto").src =
+          foto;
+
+
+        /* =========================
+           NOMBRE
+           ========================= */
 
         document.getElementById("nombre").textContent =
           mascota["Nombre de la mascota"] || "";
 
 
-        /* ESPECIE */
+        /* =========================
+           ESPECIE
+           ========================= */
 
         document.getElementById("especie").textContent =
           mascota["Especie"] || "";
 
 
-        /* COLOR */
+        /* =========================
+           COLOR
+           ========================= */
 
         document.getElementById("color").textContent =
           mascota["Color y características"] || "";
 
 
-        /* RESPONSABLE */
+        /* =========================
+           RESPONSABLE
+           ========================= */
 
         if (mascota["Nombre del responsable"]) {
 
@@ -384,7 +529,9 @@
         }
 
 
-        /* FECHA */
+        /* =========================
+           FECHA
+           ========================= */
 
         if (mascota["Fecha de registro"]) {
 
@@ -401,7 +548,9 @@
         }
 
 
-        /* AUDIO */
+        /* =========================
+           AUDIO
+           ========================= */
 
         if (mascota["Audio"]) {
 
@@ -421,7 +570,9 @@
         }
 
 
-        /* TELÉFONO */
+        /* =========================
+           TELÉFONO
+           ========================= */
 
         if (mascota["Teléfono de contacto"]) {
 
@@ -436,7 +587,9 @@
         }
 
 
-        /* WHATSAPP */
+        /* =========================
+           WHATSAPP
+           ========================= */
 
         if (mascota["WhatsApp"]) {
 
@@ -451,20 +604,23 @@
         }
 
 
-        /* ID */
+        /* =========================
+           ID
+           ========================= */
 
         document.getElementById("codigo").textContent =
           "ID: " + mascota.ID;
 
 
-        /* ESTADO */
+        /* =========================
+           ESTADO
+           ========================= */
 
         document.getElementById("estado").textContent =
           mascota["Estado"] || "";
 
-      }
 
-      catch (error) {
+      } catch (error) {
 
         console.error(error);
 
@@ -484,52 +640,32 @@
 
       if (!audioMascota) {
 
-        alert("Esta mascota no tiene un audio registrado.");
+        alert(
+          "Esta mascota no tiene un audio registrado."
+        );
 
         return;
       }
 
 
-      /* Si ya existe un reproductor, detenerlo */
-
-      if (reproductorAudio) {
-
-        reproductorAudio.pause();
-
-        reproductorAudio.currentTime = 0;
-
-      }
+      const iframe =
+        document.getElementById(
+          "iframeAudio"
+        );
 
 
-      /* Crear reproductor */
-
-      reproductorAudio =
-        new Audio(audioMascota);
-
-
-      reproductorAudio.preload = "auto";
+      const reproductor =
+        document.getElementById(
+          "reproductorAudio"
+        );
 
 
-      /* REPRODUCCIÓN DIRECTA */
+      iframe.src =
+        audioMascota;
 
-      reproductorAudio.play()
-        .then(() => {
 
-          console.log("Audio reproduciéndose");
-
-        })
-        .catch(error => {
-
-          console.error(
-            "No se pudo reproducir el audio:",
-            error
-          );
-
-          alert(
-            "No se pudo reproducir el audio. Verifica que el archivo de audio de Google Drive esté compartido como 'Cualquier persona con el enlace'."
-          );
-
-        });
+      reproductor.style.display =
+        "block";
 
     }
 
@@ -544,8 +680,10 @@
         !mascotaActual ||
         !mascotaActual["Teléfono de contacto"]
       ) {
+
         return;
       }
+
 
       window.location.href =
         "tel:" +
@@ -564,23 +702,30 @@
         !mascotaActual ||
         !mascotaActual["WhatsApp"]
       ) {
+
         return;
       }
 
+
       const numero =
         mascotaActual["WhatsApp"];
+
 
       const mensaje =
         "Hola, me comunico por " +
         mascotaActual["Nombre de la mascota"] +
         " mediante Huellitas QR.";
 
+
       window.open(
+
         "https://wa.me/" +
         numero +
         "?text=" +
         encodeURIComponent(mensaje),
+
         "_blank"
+
       );
 
     }
@@ -591,6 +736,7 @@
        ========================= */
 
     cargarMascota();
+
 
   </script>
 
