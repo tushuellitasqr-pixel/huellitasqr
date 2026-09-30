@@ -27,6 +27,26 @@
     }
 
     /* =========================
+       BANNER
+    ========================= */
+
+    .banner {
+      width: 100%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* =========================
        CONTENIDO
     ========================= */
 
@@ -34,7 +54,7 @@
       width: 100%;
       max-width: 620px;
       margin: 0 auto;
-      padding: 30px 18px 40px;
+      padding: 18px 18px 40px;
     }
 
     .encabezado {
@@ -73,14 +93,13 @@
     }
 
     /* =========================
-       FOTO DE LA MASCOTA
+       FOTO
     ========================= */
 
     #foto {
       width: 100%;
       height: 310px;
       object-fit: cover;
-      object-position: center;
       border-radius: 17px;
       display: block;
       background: #eeeeee;
@@ -243,8 +262,13 @@
 
     @media (max-width: 480px) {
 
+      .banner img {
+        width: 100%;
+        height: auto;
+      }
+
       .pagina {
-        padding: 22px 14px 35px;
+        padding: 18px 14px 35px;
       }
 
       .titulo {
@@ -269,6 +293,20 @@
 </head>
 
 <body>
+
+  <!-- =========================
+       BANNER
+  ========================= -->
+
+  <div class="banner">
+
+    <img
+      src="https://tushuellitasqr-pixel.github.io/huellitasqr/banner.jpg"
+      alt="Huellitas QR"
+    >
+
+  </div>
+
 
   <!-- =========================
        CONTENIDO
@@ -440,87 +478,26 @@
       "https://pastesheet.com/api/rbgtavcc";
 
 
-    /* =========================
-       CONVERTIR ENLACE DE DRIVE
-       A IMAGEN VISIBLE
-    ========================= */
-
     function convertirGoogleDrive(url) {
 
       if (!url) {
         return "";
       }
 
-      const texto =
-        String(url).trim();
-
-
-      /*
-        Si ya es una imagen directa,
-        la dejamos igual.
-      */
-
-      if (
-        texto.includes("googleusercontent.com") ||
-        texto.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)
-      ) {
-
-        return texto;
-
-      }
-
-
-      /*
-        Extraer ID de:
-        https://drive.google.com/open?id=XXXX
-      */
-
-      let coincidencia =
-        texto.match(/[?&]id=([^&]+)/);
-
-
-      /*
-        También aceptar:
-        https://drive.google.com/file/d/XXXX/view
-      */
-
-      if (!coincidencia) {
-
-        coincidencia =
-          texto.match(
-            /drive\.google\.com\/file\/d\/([^/]+)/
-          );
-
-      }
-
+      const coincidencia =
+        url.match(/[?&]id=([^&]+)/);
 
       if (coincidencia) {
 
-        const id =
-          coincidencia[1];
-
-        /*
-          Thumbnail de Google Drive.
-          Esta forma funciona mejor para
-          mostrar imágenes en una página web.
-        */
-
-        return (
-          "https://drive.google.com/thumbnail?id=" +
-          encodeURIComponent(id) +
-          "&sz=w1200"
-        );
+        return "https://drive.google.com/thumbnail?id="
+          + coincidencia[1]
+          + "&sz=w1200";
 
       }
 
-
-      return texto;
+      return url;
     }
 
-
-    /* =========================
-       FECHA
-    ========================= */
 
     function formatearFecha(valor) {
 
@@ -539,8 +516,7 @@
           );
 
         fecha.setUTCDate(
-          fecha.getUTCDate() +
-          Math.floor(numero)
+          fecha.getUTCDate() + Math.floor(numero)
         );
 
         return fecha.toLocaleDateString(
@@ -551,16 +527,11 @@
             year: "numeric"
           }
         );
-
       }
 
       return valor;
     }
 
-
-    /* =========================
-       OBTENER ID
-    ========================= */
 
     function obtenerID() {
 
@@ -578,15 +549,10 @@
     }
 
 
-    /* =========================
-       CARGAR MASCOTA
-    ========================= */
-
     async function cargarMascota() {
 
       const id =
         obtenerID();
-
 
       if (!id) {
 
@@ -650,70 +616,41 @@
            DATOS PRINCIPALES
         ========================= */
 
-        document.getElementById(
-          "nombre"
-        ).textContent =
-          animal["Nombre de la mascota"] ||
-          "Sin nombre";
+        document.getElementById("nombre").textContent =
+          animal["Nombre de la mascota"] || "Sin nombre";
 
 
-        document.getElementById(
-          "especie"
-        ).textContent =
-          animal["Especie"] ||
-          "Sin especificar";
+        document.getElementById("especie").textContent =
+          animal["Especie"] || "Sin especificar";
 
 
-        document.getElementById(
-          "color"
-        ).textContent =
+        document.getElementById("color").textContent =
           animal["Color y características"] ||
           "Sin información";
 
 
-        document.getElementById(
-          "codigo"
-        ).textContent =
-          animal["ID"] ||
-          id;
+        document.getElementById("codigo").textContent =
+          animal["ID"] || id;
 
 
         /* =========================
            FOTO
         ========================= */
 
-        const fotoOriginal =
-          animal["Foto de la mascota"];
-
-
         const foto =
           convertirGoogleDrive(
-            fotoOriginal
+            animal["Foto de la mascota"]
           );
-
-
-        const imagen =
-          document.getElementById("foto");
 
 
         if (foto) {
 
-          imagen.src =
+          document.getElementById("foto").src =
             foto;
-
-          imagen.style.display =
-            "block";
-
-          imagen.alt =
-            "Foto de " +
-            (
-              animal["Nombre de la mascota"] ||
-              "la mascota"
-            );
 
         } else {
 
-          imagen.style.display =
+          document.getElementById("foto").style.display =
             "none";
 
         }
@@ -770,8 +707,7 @@
         ========================= */
 
         const estado =
-          animal["Estado"] ||
-          "ACTIVO";
+          animal["Estado"] || "ACTIVO";
 
 
         document.getElementById(
@@ -796,9 +732,7 @@
             "block";
 
           window.audioMascota =
-            convertirGoogleDrive(
-              audio
-            );
+            convertirGoogleDrive(audio);
 
         }
 
@@ -818,11 +752,8 @@
               "botonTelefono"
             );
 
-
           botonTelefono.href =
-            "tel:" +
-            telefono;
-
+            "tel:" + telefono;
 
           botonTelefono.style.display =
             "block";
@@ -877,10 +808,6 @@
     }
 
 
-    /* =========================
-       REPRODUCIR AUDIO
-    ========================= */
-
     function reproducirAudio() {
 
       const audio =
@@ -899,23 +826,13 @@
       reproductor.play()
         .catch(
           error => {
-
             console.error(error);
-
-            window.open(
-              audio,
-              "_blank"
-            );
-
+            window.open(audio, "_blank");
           }
         );
 
     }
 
-
-    /* =========================
-       INICIAR
-    ========================= */
 
     cargarMascota();
 
